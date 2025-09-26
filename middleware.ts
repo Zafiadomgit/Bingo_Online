@@ -2,12 +2,7 @@ import type { NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
   // Middleware simplificado sin autenticación
-  // Redirigir a /test-bingo si no es una ruta válida
-  if (request.nextUrl.pathname === "/") {
-    const url = request.nextUrl.clone()
-    url.pathname = "/test-bingo"
-    return Response.redirect(url)
-  }
+  // Permitir acceso a todas las rutas
 }
 
 export const config = {
