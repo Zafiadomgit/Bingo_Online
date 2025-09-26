@@ -1,88 +1,66 @@
-import { createClient } from "@/lib/supabase/server"
 import type { BingoGame, BingoCard, Profile } from "./types"
 
 export class BingoService {
-  private supabase
+  private users: Map<string, Profile> = new Map()
+  private games: Map<string, BingoGame> = new Map()
+  private cards: Map<string, BingoCard[]> = new Map()
 
   constructor() {
-    this.supabase = createClient()
+    // Inicializar con datos de prueba
+    this.initializeTestData()
+  }
+
+  private initializeTestData() {
+    // Usuario de prueba
+    const testUser: Profile = {
+      id: 'test-user-1',
+      email: 'test@example.com',
+      display_name: 'Usuario de Prueba',
+      credits: 1000,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    this.users.set('test-user-1', testUser)
+
+    // Juego de prueba
+    const testGame: BingoGame = {
+      id: 'test-game-1',
+      name: 'Juego de Prueba',
+      status: 'active',
+      current_number: null,
+      numbers_called: [],
+      max_cards: 50,
+      card_price: 100,
+      prize_pool: 5000,
+      created_at: new Date().toISOString(),
+      host_id: 'test-host'
+    }
+    this.games.set('test-game-1', testGame)
+    this.cards.set('test-game-1', [])
   }
 
   async getCurrentUser(): Promise<Profile | null> {
-    const {
-      data: { user },
-    } = await this.supabase.auth.getUser()
-    if (!user) return null
-
-    let { data: profile, error } = await this.supabase.from("profiles").select("*").eq("id", user.id).maybeSingle() // Usar maybeSingle en lugar de single para evitar error si no existe
-
-    // Si no existe el perfil, crearlo
-    if (!profile && !error) {
-      console.log("[v0] Profile not found, creating new profile for user:", user.id)
-
-      const { data: newProfile, error: insertError } = await this.supabase
-        .from("profiles")
-        .insert({
-          id: user.id,
-          email: user.email || "",
-          display_name: user.user_metadata?.display_name || user.email?.split("@")[0] || "Usuario",
-          credits: 1000,
-        })
-        .select()
-        .single()
-
-      if (insertError) {
-        console.error("[v0] Error creating profile:", insertError)
-        throw new Error(`Error creando perfil: ${insertError.message}`)
-      }
-
-      profile = newProfile
-    } else if (error) {
-      console.error("[v0] Error fetching profile:", error)
-      throw new Error(`Error obteniendo perfil: ${error.message}`)
-    }
-
-    return profile
+    // Retornar usuario de prueba
+    return this.users.get('test-user-1') || null
   }
 
   async getActiveGames(): Promise<BingoGame[]> {
-    const { data, error } = await this.supabase
-      .from("bingo_games")
-      .select("*")
-      .in("status", ["waiting", "active"])
-      .order("created_at", { ascending: false })
-
-    if (error) throw error
-    return data || []
+    const games = Array.from(this.games.values())
+    return games.filter(game => game.status === 'waiting' || game.status === 'active')
   }
 
   async getGame(gameId: string): Promise<BingoGame | null> {
-    const { data, error } = await this.supabase.from("bingo_games").select("*").eq("id", gameId).single()
-
-    if (error) throw error
-    return data
+    return this.games.get(gameId) || null
   }
 
   async getUserCards(gameId: string, userId: string): Promise<BingoCard[]> {
-    const { data, error } = await this.supabase
-      .from("bingo_cards")
-      .select("*")
-      .eq("game_id", gameId)
-      .eq("user_id", userId)
-      .order("card_number")
-
-    if (error) throw error
-    return data || []
+    const cards = this.cards.get(gameId) || []
+    return cards.filter(card => card.user_id === userId)
   }
 
   async getGameCardCount(gameId: string): Promise<number> {
-    const { count, error } = await this.supabase
-      .from("bingo_cards")
-      .select("*", { count: "exact", head: true })
-      .eq("game_id", gameId)
-
-    if (error) throw error
-    return count || 0
+    const cards = this.cards.get(gameId) || []
+    return cards.length
   }
 
   async purchaseCard(gameId: string): Promise<{ success: boolean; card?: BingoCard; error?: string }> {
@@ -112,43 +90,29 @@ export class BingoService {
         return { success: false, error: "No hay más cartones disponibles" }
       }
 
-      // Generar números del cartón
-      const { data: cardNumbers, error: numbersError } = await this.supabase.rpc("generate_bingo_card_numbers")
-
-      if (numbersError) throw numbersError
+      // Generar números del cartón (simplificado)
+      const cardNumbers = this.generateBingoCardNumbers()
 
       // Crear el cartón
-      const { data: card, error: cardError } = await this.supabase
-        .from("bingo_cards")
-        .insert({
-          game_id: gameId,
-          user_id: user.id,
-          card_number: cardCount + 1,
-          numbers: cardNumbers,
-        })
-        .select()
-        .single()
-
-      if (cardError) throw cardError
-
-      // Crear el pago
-      const { error: paymentError } = await this.supabase.from("payments").insert({
-        user_id: user.id,
+      const card: BingoCard = {
+        id: `card-${Date.now()}`,
         game_id: gameId,
-        amount: game.card_price,
-        status: "completed",
-        payment_method: "credits",
-      })
+        user_id: user.id,
+        card_number: cardCount + 1,
+        numbers: cardNumbers,
+        marked_positions: [],
+        is_winner: false,
+        created_at: new Date().toISOString()
+      }
 
-      if (paymentError) throw paymentError
+      // Agregar el cartón
+      const existingCards = this.cards.get(gameId) || []
+      existingCards.push(card)
+      this.cards.set(gameId, existingCards)
 
       // Descontar créditos del usuario
-      const { error: updateError } = await this.supabase
-        .from("profiles")
-        .update({ credits: user.credits - game.card_price })
-        .eq("id", user.id)
-
-      if (updateError) throw updateError
+      user.credits -= game.card_price
+      this.users.set(user.id, user)
 
       return { success: true, card }
     } catch (error) {
@@ -157,18 +121,26 @@ export class BingoService {
     }
   }
 
+  private generateBingoCardNumbers(): number[] {
+    // Generar 24 números únicos para el cartón de bingo
+    const numbers: number[] = []
+    while (numbers.length < 24) {
+      const num = Math.floor(Math.random() * 75) + 1
+      if (!numbers.includes(num)) {
+        numbers.push(num)
+      }
+    }
+    return numbers.sort((a, b) => a - b)
+  }
+
   async addCredits(userId: string, amount: number): Promise<boolean> {
     try {
-      const { data: profile } = await this.supabase.from("profiles").select("credits").eq("id", userId).single()
+      const user = this.users.get(userId)
+      if (!user) return false
 
-      if (!profile) return false
-
-      const { error } = await this.supabase
-        .from("profiles")
-        .update({ credits: profile.credits + amount })
-        .eq("id", userId)
-
-      return !error
+      user.credits += amount
+      this.users.set(userId, user)
+      return true
     } catch (error) {
       console.error("Error adding credits:", error)
       return false

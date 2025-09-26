@@ -1,12 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import type { Profile, BingoGame, BingoCard } from "@/lib/types"
-import { useRouter } from "next/navigation"
+import { BingoService } from "@/lib/bingo-service"
 
 export default function GamePage() {
   console.log("[v0] GamePage component rendering")
@@ -18,108 +17,44 @@ export default function GamePage() {
   const [cardCount, setCardCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [profileError, setProfileError] = useState<string | null>(null)
   const { toast } = useToast()
-  const router = useRouter()
 
-  const supabase = createClient()
+  const bingoService = new BingoService()
 
   useEffect(() => {
-    console.log("[v0] useEffect running - checking user and loading games")
-    checkUser()
-    loadGames()
+    console.log("[v0] useEffect running - loading user and games")
+    loadUserAndGames()
   }, [])
 
-  const checkUser = async () => {
+  const loadUserAndGames = async () => {
     try {
-      console.log("[v0] Checking user authentication")
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser()
+      console.log("[v0] Loading user and games")
+      
+      // Cargar usuario
+      const userData = await bingoService.getCurrentUser()
+      setUser(userData)
 
-      console.log("[v0] Auth user:", authUser)
-
-      if (!authUser) {
-        console.log("[v0] No authenticated user, redirecting to login")
-        router.push("/auth/login")
-        return
-      }
-
-      console.log("[v0] Loading user profile")
-      const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", authUser.id).maybeSingle()
-
-      console.log("[v0] Profile data:", profile)
-      console.log("[v0] Profile error:", error)
-
-      if (error) {
-        console.error("[v0] Error loading profile:", error)
-        setProfileError("Error cargando perfil de usuario")
-      } else if (!profile) {
-        console.log("[v0] Profile not found, attempting to create")
-        const { data: newProfile, error: insertError } = await supabase
-          .from("profiles")
-          .insert({
-            id: authUser.id,
-            email: authUser.email || "",
-            display_name: authUser.user_metadata?.display_name || authUser.email?.split("@")[0] || "Usuario",
-            credits: 1000,
-          })
-          .select()
-          .single()
-
-        if (insertError) {
-          console.error("[v0] Error creating profile:", insertError)
-          setProfileError("Error creando perfil de usuario")
-        } else {
-          console.log("[v0] Profile created successfully:", newProfile)
-          setUser(newProfile)
-          setProfileError(null)
-        }
-      } else {
-        setUser(profile)
-        setProfileError(null)
+      // Cargar juegos
+      const gamesData = await bingoService.getActiveGames()
+      setGames(gamesData)
+      
+      if (gamesData.length > 0 && !selectedGame) {
+        setSelectedGame(gamesData[0])
+        console.log("[v0] Selected first game:", gamesData[0])
       }
     } catch (error) {
-      console.error("[v0] Error in checkUser:", error)
-      setProfileError("Error verificando usuario")
-    }
-  }
-
-  const loadGames = async () => {
-    try {
-      console.log("[v0] Loading games")
-      const { data, error } = await supabase
-        .from("bingo_games")
-        .select("*")
-        .in("status", ["waiting", "active"])
-        .order("created_at", { ascending: false })
-
-      console.log("[v0] Games data:", data)
-      console.log("[v0] Games error:", error)
-
-      if (error) {
-        console.error("[v0] Error loading games:", error)
-        setError("Error cargando juegos")
-        return
-      }
-
-      setGames(data || [])
-      if (data && data.length > 0 && !selectedGame) {
-        setSelectedGame(data[0])
-        console.log("[v0] Selected first game:", data[0])
-      }
-    } catch (error) {
-      console.error("[v0] Error in loadGames:", error)
-      setError("Error cargando juegos")
+      console.error("[v0] Error loading data:", error)
+      setError("Error cargando datos")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     console.log("[v0] Logging out")
-    await supabase.auth.signOut()
-    router.push("/")
+    // Simular logout - en una app real aquí harías logout
+    setUser(null)
+    window.location.href = "/"
   }
 
   const handlePurchaseCard = async () => {
@@ -137,73 +72,25 @@ export default function GamePage() {
         return
       }
 
-      // Generar números del cartón
-      const { data: cardNumbers, error: numbersError } = await supabase.rpc("generate_bingo_card_numbers")
+      const result = await bingoService.purchaseCard(selectedGame.id)
+      
+      if (result.success && result.card) {
+        // Actualizar estado local
+        setUser({ ...user, credits: user.credits - selectedGame.card_price })
+        setUserCards([...userCards, result.card])
+        setCardCount(cardCount + 1)
 
-      if (numbersError) {
-        console.error("[v0] Error generating card numbers:", numbersError)
+        toast({
+          title: "¡Cartón comprado!",
+          description: `Cartón #${result.card.card_number} comprado exitosamente`,
+        })
+      } else {
         toast({
           title: "Error",
-          description: "Error generando números del cartón",
+          description: result.error || "Error comprando el cartón",
           variant: "destructive",
         })
-        return
       }
-
-      // Obtener el número de cartones actuales
-      const { count } = await supabase
-        .from("bingo_cards")
-        .select("*", { count: "exact", head: true })
-        .eq("game_id", selectedGame.id)
-
-      const cardNumber = (count || 0) + 1
-
-      // Crear el cartón
-      const { data: card, error: cardError } = await supabase
-        .from("bingo_cards")
-        .insert({
-          game_id: selectedGame.id,
-          user_id: user.id,
-          card_number: cardNumber,
-          numbers: cardNumbers,
-        })
-        .select()
-        .single()
-
-      if (cardError) {
-        console.error("[v0] Error creating card:", cardError)
-        toast({
-          title: "Error",
-          description: "Error creando el cartón",
-          variant: "destructive",
-        })
-        return
-      }
-
-      // Actualizar créditos del usuario
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ credits: user.credits - selectedGame.card_price })
-        .eq("id", user.id)
-
-      if (updateError) {
-        console.error("[v0] Error updating credits:", updateError)
-        toast({
-          title: "Error",
-          description: "Error actualizando créditos",
-          variant: "destructive",
-        })
-        return
-      }
-
-      // Actualizar estado local
-      setUser({ ...user, credits: user.credits - selectedGame.card_price })
-      setUserCards([...userCards, card])
-
-      toast({
-        title: "¡Cartón comprado!",
-        description: `Cartón #${cardNumber} comprado exitosamente`,
-      })
     } catch (error) {
       console.error("[v0] Error purchasing card:", error)
       toast({
@@ -214,7 +101,7 @@ export default function GamePage() {
     }
   }
 
-  console.log("[v0] Render state:", { isLoading, user, games, error, profileError })
+  console.log("[v0] Render state:", { isLoading, user, games, error })
 
   if (isLoading) {
     return (
@@ -259,32 +146,20 @@ export default function GamePage() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        {profileError && (
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
-            <div className="flex items-center gap-2">
-              <div className="text-yellow-600 font-medium">⚠️ Advertencia</div>
-              <div className="text-yellow-700">{profileError}</div>
-              <Button size="sm" variant="outline" onClick={checkUser} className="ml-auto rounded-xl bg-transparent">
-                Reintentar
-              </Button>
-            </div>
-          </div>
-        )}
-
         {/* Game Selection */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-slate-900 mb-6">Juegos Disponibles</h2>
           {error ? (
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 p-8 text-center">
               <div className="text-red-600 mb-4">{error}</div>
-              <Button onClick={loadGames} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white">
+              <Button onClick={loadUserAndGames} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white">
                 Reintentar
               </Button>
             </div>
           ) : games.length === 0 ? (
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 p-8 text-center">
               <div className="text-slate-600 mb-4">No hay juegos disponibles</div>
-              <Button onClick={loadGames} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white">
+              <Button onClick={loadUserAndGames} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white">
                 Recargar
               </Button>
             </div>

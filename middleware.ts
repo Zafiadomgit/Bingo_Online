@@ -1,16 +1,13 @@
-import { updateSession } from "@/lib/supabase/middleware"
 import type { NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  if (
-    request.nextUrl.pathname.startsWith("/test-bingo") ||
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
-    return
+  // Middleware simplificado sin autenticación
+  // Redirigir a /test-bingo si no es una ruta válida
+  if (request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone()
+    url.pathname = "/test-bingo"
+    return Response.redirect(url)
   }
-
-  return await updateSession(request)
 }
 
 export const config = {
