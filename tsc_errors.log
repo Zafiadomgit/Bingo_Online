@@ -1,0 +1,26 @@
+app/api/debug/check-cards/route.ts(53,9): error TS7034: Variable 'cardNumbers' implicitly has type 'any[]' in some locations where its type cannot be determined.
+app/api/debug/check-cards/route.ts(76,31): error TS7005: Variable 'cardNumbers' implicitly has an 'any[]' type.
+app/api/debug/check-cards/route.ts(111,25): error TS7005: Variable 'cardNumbers' implicitly has an 'any[]' type.
+app/api/debug/games-status/route.ts(26,47): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "FINISHED" | "SCHEDULED"' and '"active"' have no overlap.
+app/api/debug/games-status/route.ts(28,54): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "ACTIVE" | "SCHEDULED"' and '"finished"' have no overlap.
+app/api/debug/games-status/route.ts(29,52): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "ACTIVE" | "SCHEDULED"' and '"finished"' have no overlap.
+app/api/debug/games-status/route.ts(31,50): error TS2367: This comparison appears to be unintentional because the types '"SCHEDULED"' and '"active"' have no overlap.
+app/api/debug/next-game/route.ts(38,54): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "FINISHED" | "SCHEDULED"' and '"active"' have no overlap.
+app/api/debug/next-game/route.ts(40,61): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "ACTIVE" | "SCHEDULED"' and '"finished"' have no overlap.
+app/api/debug/next-game/route.ts(65,52): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "FINISHED" | "SCHEDULED"' and '"active"' have no overlap.
+app/api/debug/next-game/route.ts(67,59): error TS2367: This comparison appears to be unintentional because the types '"waiting" | "WAITING" | "ACTIVE" | "SCHEDULED"' and '"finished"' have no overlap.
+app/api/debug/test-cards/route.ts(53,9): error TS7034: Variable 'gameCards' implicitly has type 'any[]' in some locations where its type cannot be determined.
+app/api/debug/test-cards/route.ts(80,18): error TS7005: Variable 'gameCards' implicitly has an 'any[]' type.
+app/test-bingo/page.tsx(12,47): error TS2305: Module '"@/lib/bingo-utils"' has no exported member 'BingoCard'.
+app/test-bingo/page.tsx(62,15): error TS2345: Argument of type '(prevGame: { id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }) => { ...; } | { ...; }' is not assignable to parameter of type 'SetStateAction<{ id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }>'.
+  Type '(prevGame: { id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }) => { ...; } | { ...; }' is not assignable to type '(prevState: { id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }) => { ...; }'.
+    Type '{ id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; } | { ...; }' is not assignable to type '{ id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }'.
+      Type '{ current_number: number; called_numbers: number[]; id: string; name: string; status: "active"; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }' is not assignable to type '{ id: string; name: string; status: "active"; current_number: null; called_numbers: number[]; max_players: number; card_price: number; prize_pool: number; created_at: string; host_id: string; }'.
+        Types of property 'current_number' are incompatible.
+          Type 'number' is not assignable to type 'null'.
+app/test-bingo/page.tsx(228,23): error TS2322: Type '{ card: BingoCardType; calledNumbers: number[]; isWinner: boolean; }' is not assignable to type 'IntrinsicAttributes & BingoCardProps'.
+  Property 'isWinner' does not exist on type 'IntrinsicAttributes & BingoCardProps'.
+app/test-bingo/page.tsx(244,64): error TS2322: Type '{ calledNumbers: number[]; currentNumber: null; }' is not assignable to type 'IntrinsicAttributes & CalledNumbersProps'.
+  Property 'currentNumber' does not exist on type 'IntrinsicAttributes & CalledNumbersProps'.
+lib/game-engine.ts(22,7): error TS2353: Object literal may only specify known properties, and 'prize_pool' does not exist in type 'BingoGame'.
+lib/game-engine.ts(157,9): error TS2353: Object literal may only specify known properties, and 'prize_pool' does not exist in type 'BingoGame'.

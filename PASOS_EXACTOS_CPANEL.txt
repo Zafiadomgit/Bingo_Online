@@ -1,0 +1,111 @@
+═══════════════════════════════════════════════════════════════
+  PASOS EXACTOS EN CPANEL (Basado en lo que veo)
+═══════════════════════════════════════════════════════════════
+
+Veo que estás en cPanel. Sigue estos pasos EXACTOS:
+
+═══════════════════════════════════════════════════════════════
+PASO 1: SUBIR ARCHIVOS PRIMERO
+═══════════════════════════════════════════════════════════════
+
+1. En la sección "Archivos", haz clic en "Administrador de archivos"
+2. Ve a: public_html
+3. Crea una carpeta llamada: bingo
+4. Abre la carpeta "bingo"
+5. Sube TODOS los archivos de "bluehost-deploy" dentro de "bingo"
+   (Puedes subir un ZIP y extraerlo)
+
+
+═══════════════════════════════════════════════════════════════
+PASO 2: INSTALAR DEPENDENCIAS (SSH)
+═══════════════════════════════════════════════════════════════
+
+1. En la barra de búsqueda (arriba a la derecha), escribe: "terminal"
+2. O busca en "Avanzada" → "Terminal" o "SSH Access"
+3. Abre el Terminal
+4. Ejecuta estos comandos UNO POR UNO:
+
+   cd public_html/bingo
+   npm install --production
+   npm run build
+
+5. ESPERA a que termine cada comando
+
+
+═══════════════════════════════════════════════════════════════
+PASO 3: CREAR APLICACIÓN NODE.JS
+═══════════════════════════════════════════════════════════════
+
+1. En la sección "Software", busca "Setup Node.js App"
+   (Tiene el logo de Node.js - círculo verde con "JS")
+2. Haz clic en "Setup Node.js App"
+3. Haz clic en "CREATE APPLICATION"
+4. Llena el formulario:
+
+   Node.js Version: 20.19.4 (o la más reciente disponible)
+   Application Mode: Production
+   Application Root: /home/thebingo/public_html/bingo
+   Application URL: /bingo
+   Application Startup File: server.js
+   Passenger log file: /home/thebingo/
+
+5. Haz clic en "CREATE"
+
+
+═══════════════════════════════════════════════════════════════
+PASO 4: CONFIGURAR VARIABLES DE ENTORNO
+═══════════════════════════════════════════════════════════════
+
+1. Después de crear la aplicación, verás una lista de aplicaciones
+2. Encuentra tu aplicación "bingo"
+3. Haz clic en ella (o en el icono de editar)
+4. Busca "Environment Variables" o "Variables de Entorno"
+5. Agrega estas variables UNA POR UNA:
+
+   NODE_ENV = production
+   NEXT_PUBLIC_SUPABASE_URL = https://lwczeimcljkxsoukiwsa.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzUwNzEsImV4cCI6MjA3NDY1MTA3MX0.0pBwQndN3kliELCoKSBZnCDRpqny_o8cGKUSQLYPfT8
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTA3NTA3MSwiZXhwIjoyMDc0NjUxMDcxfQ.WTWloMV7APc_NJBSWKiY2veMdxeogNkdaoPmXB_xnMM
+   NEXT_PUBLIC_APP_URL = https://thebingofortuna.com/bingo
+   JWT_SECRET = cualquier-texto-largo-y-aleatorio
+   CRON_SECRET = otro-texto-largo-y-aleatorio
+   PORT = 3000
+
+6. Guarda los cambios
+
+
+═══════════════════════════════════════════════════════════════
+PASO 5: REINICIAR Y VERIFICAR
+═══════════════════════════════════════════════════════════════
+
+1. En la lista de aplicaciones Node.js, encuentra "bingo"
+2. Haz clic en "RESTART" o "RELOAD"
+3. Espera 30-60 segundos
+4. Verifica que el estado diga "Running" o "Active"
+5. Abre: https://thebingofortuna.com/bingo
+
+
+═══════════════════════════════════════════════════════════════
+SI NO ENCUENTRAS "Setup Node.js App":
+═══════════════════════════════════════════════════════════════
+
+1. En la barra de búsqueda (arriba), escribe: "node"
+2. Debería aparecer "Setup Node.js App" o "Node.js Selector"
+3. Si NO aparece, tu plan puede no incluir Node.js
+4. Contacta a Bluehost para habilitar Node.js en tu plan
+
+
+═══════════════════════════════════════════════════════════════
+ORDEN IMPORTANTE:
+═══════════════════════════════════════════════════════════════
+
+1. PRIMERO: Subir archivos
+2. SEGUNDO: Instalar dependencias (npm install)
+3. TERCERO: Crear aplicación Node.js
+4. CUARTO: Configurar variables
+5. QUINTO: Reiniciar
+
+NO te saltes el paso 2 (npm install), es CRÍTICO.
+
+═══════════════════════════════════════════════════════════════
+

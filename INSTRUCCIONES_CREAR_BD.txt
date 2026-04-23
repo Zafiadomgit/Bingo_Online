@@ -1,0 +1,57 @@
+GUÍA PASO A PASO: CREAR BASE DE DATOS POSTGRESQL EN CPANEL
+
+Sigue estos pasos para crear tu base de datos en el hosting:
+
+1. ACCEDER A LA SECCIÓN DE BASE DE DATOS
+   - Entra a tu cPanel.
+   - Busca la sección "DATABASES" (Bases de Datos).
+   - Haz clic en "PostgreSQL Databases" (No en MySQL).
+
+2. CREAR LA BASE DE DATOS
+   - En "Create New Database":
+     * Database Name: bingo (o lo que prefieras)
+     * Haz clic en "Create Database".
+     * Nota: El nombre final será algo como `usuario_bingo`. ¡Anótalo!
+
+3. CREAR EL USUARIO DE BASE DE DATOS
+   - Baja a "Add New User" (Agregar Nuevo Usuario):
+     * Username: admin (o lo que prefieras)
+     * Password: Genera una contraseña segura y ¡GUÁRDALA!
+     * Haz clic en "Create User".
+     * Nota: El usuario final será algo como `usuario_admin`.
+
+4. VINCULAR USUARIO Y BASE DE DATOS
+   - Baja a "Add User to Database":
+     * User: Selecciona el usuario que creaste.
+     * Database: Selecciona la base de datos que creaste.
+     * Haz clic en "Submit" o "Add".
+     * Si te pide permisos, marca "ALL PRIVILEGES".
+
+5. IMPORTAR LAS TABLAS (SCHEMA)
+   - Vuelve al inicio de cPanel.
+   - Busca "phpPgAdmin" en la sección de Bases de Datos (es como phpMyAdmin pero para PostgreSQL).
+   - Abre phpPgAdmin.
+   - A la izquierda, verás tu base de datos (`usuario_bingo`). Haz clic en ella.
+   - Busca el botón o pestaña "SQL" en la parte superior.
+   - Abre el archivo `schema.sql` que está en la carpeta de tu proyecto (en tu computadora).
+   - Copia TODO el contenido del archivo `schema.sql`.
+   - Pégalo en el cuadro de texto de SQL en phpPgAdmin.
+   - Haz clic en "Execute" o "Run".
+
+   Alternativa si phpPgAdmin tiene opción de importar:
+   - Haz clic en "Import".
+   - Selecciona el archivo `schema.sql`.
+   - Haz clic en Ejecutar.
+
+6. CONFIGURAR LA APLICACIÓN (VARIABLES DE ENTORNO)
+   - Ve a la sección "Setup Node.js App" en cPanel.
+   - Edita tu aplicación.
+   - En "Environment Variables", agrega/actualiza:
+     
+     DB_NAME = usuario_bingo  (El nombre completo del paso 2)
+     DB_USER = usuario_admin  (El nombre completo del paso 3)
+     DB_PASSWORD = (La contraseña del paso 3)
+     DB_HOST = 127.0.0.1      (A veces es 'localhost' o la IP del servidor)
+     DB_PORT = 5432
+
+¡Listo! Tu base de datos está creada y vinculada.

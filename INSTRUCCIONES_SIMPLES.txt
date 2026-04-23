@@ -1,0 +1,73 @@
+═══════════════════════════════════════════════════════════════
+  INSTRUCCIONES SIMPLES - Solo Subir Archivos
+═══════════════════════════════════════════════════════════════
+
+✅ PASO 1: Preparar Archivos (1 comando)
+───────────────────────────────────────────────────────────────
+
+En tu computadora, ejecuta:
+
+   node preparar-para-bluehost.js
+
+Esto hará TODO automáticamente:
+✓ Instalará dependencias
+✓ Construirá la aplicación
+✓ Preparará todos los archivos listos
+
+Espera 5-10 minutos a que termine.
+
+
+✅ PASO 2: Subir Archivos a Bluehost
+───────────────────────────────────────────────────────────────
+
+1. Abre la carpeta "bluehost-deploy"
+2. Selecciona TODOS los archivos y carpetas
+3. Comprímelos en un ZIP
+4. En cPanel → File Manager → public_html
+5. Crea carpeta "bingo"
+6. Sube el ZIP dentro de "bingo"
+7. Extrae el ZIP
+8. Elimina el ZIP
+
+
+✅ PASO 3: Crear Aplicación Node.js
+───────────────────────────────────────────────────────────────
+
+1. En cPanel → "Setup Node.js App"
+2. Haz clic en "CREATE APPLICATION"
+3. Configura:
+   - Application Root: /home/thebingo/public_html/bingo
+   - Application URL: /bingo
+   - Application Startup File: server.js
+   - Node.js Version: 20.19.4
+   - Application Mode: Production
+4. Haz clic en "CREATE"
+
+
+✅ PASO 4: Variables de Entorno
+───────────────────────────────────────────────────────────────
+
+En Node.js Selector, agrega estas variables:
+
+   NODE_ENV = production
+   NEXT_PUBLIC_SUPABASE_URL = https://lwczeimcljkxsoukiwsa.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzUwNzEsImV4cCI6MjA3NDY1MTA3MX0.0pBwQndN3kliELCoKSBZnCDRpqny_o8cGKUSQLYPfT8
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTA3NTA3MSwiZXhwIjoyMDc0NjUxMDcxfQ.WTWloMV7APc_NJBSWKiY2veMdxeogNkdaoPmXB_xnMM
+   NEXT_PUBLIC_APP_URL = https://thebingofortuna.com/bingo
+   JWT_SECRET = cualquier-texto-largo
+   CRON_SECRET = otro-texto-largo
+   PORT = 3000
+
+
+✅ PASO 5: Reiniciar
+───────────────────────────────────────────────────────────────
+
+1. En Node.js Selector, haz clic en "RESTART"
+2. Espera 30 segundos
+3. Abre: https://thebingofortuna.com/bingo
+
+
+═══════════════════════════════════════════════════════════════
+¡LISTO! Solo 5 pasos simples.
+═══════════════════════════════════════════════════════════════
+

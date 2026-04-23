@@ -1,0 +1,95 @@
+═══════════════════════════════════════════════════════════════
+  INSTRUCCIONES PARA CARGAR ARCHIVOS A BLUEHOST
+═══════════════════════════════════════════════════════════════
+
+📁 QUÉ ARCHIVOS CARGAR:
+───────────────────────────────────────────────────────────────
+Carga TODO el contenido de la carpeta: bluehost-deploy/
+
+Incluye estas carpetas y archivos:
+  ✓ app/
+  ✓ components/
+  ✓ lib/
+  ✓ hooks/
+  ✓ public/
+  ✓ styles/
+  ✓ .env.local
+  ✓ package.json
+  ✓ server.js
+  ✓ next.config.mjs
+  ✓ tsconfig.json
+  ✓ middleware.ts
+  ✓ postcss.config.mjs
+  ✓ components.json
+  ✓ next-env.d.ts
+  ✓ .gitignore
+
+⚠️ IMPORTANTE: NO incluyas la carpeta "bluehost-deploy" misma,
+   solo su CONTENIDO.
+
+
+📍 DÓNDE CARGARLOS:
+───────────────────────────────────────────────────────────────
+1. Accede a cPanel de Bluehost
+2. Busca y abre "File Manager" (Administrador de Archivos)
+3. Navega a la carpeta: public_html
+4. Crea una subcarpeta llamada: bingo
+   (Clic derecho → Create Folder → nombre: "bingo")
+5. Sube los archivos DENTRO de la carpeta "bingo"
+   (Ruta final: public_html/bingo/)
+
+
+📤 CÓMO CARGARLOS:
+───────────────────────────────────────────────────────────────
+OPCIÓN 1: Subir ZIP (Recomendado)
+  1. Abre la carpeta "bluehost-deploy"
+  2. Selecciona TODOS los archivos y carpetas dentro
+  3. Comprímelos en un archivo ZIP
+  4. En File Manager de Bluehost, haz clic en "Upload"
+  5. Sube el archivo ZIP
+  6. Clic derecho en el ZIP → "Extract" (Extraer)
+  7. Elimina el archivo ZIP después de extraer
+
+OPCIÓN 2: Subir por FTP (FileZilla)
+  1. Descarga FileZilla
+  2. Conéctate con tus credenciales FTP de Bluehost
+  3. Arrastra todos los archivos de "bluehost-deploy" a "public_html"
+
+
+⚙️ CONFIGURACIÓN DESPUÉS DE CARGAR:
+───────────────────────────────────────────────────────────────
+1. Edita .env.local y cambia "TUDOMINIO.com" por tu dominio real
+
+2. Crea aplicación Node.js en cPanel:
+   - Ve a "Node.js Selector"
+   - Clic en "Create Application"
+   - Configura:
+     * Node.js Version: 18.x o superior (20.19.4 recomendado)
+     * Application Mode: Production
+     * Application Root: /home/thebingo/public_html/bingo
+       ⚠️ IMPORTANTE: Usa la subcarpeta "bingo", NO public_html directamente
+     * Application URL: /bingo
+       (O "/" si quieres que sea la raíz del dominio)
+     * Application Startup File: server.js
+
+3. Configura Variables de Entorno:
+   - En Node.js Selector, encuentra tu aplicación
+   - Busca "Environment Variables"
+   - Copia TODAS las variables de .env.local (una por una)
+
+4. Instala dependencias (por SSH):
+   cd public_html
+   npm install --production
+   npm run build
+
+5. Reinicia la aplicación en Node.js Selector
+
+
+✅ VERIFICACIÓN:
+───────────────────────────────────────────────────────────────
+Abre tu navegador y ve a: https://tudominio.com
+
+Si todo está bien, deberías ver la aplicación funcionando.
+
+
+═══════════════════════════════════════════════════════════════

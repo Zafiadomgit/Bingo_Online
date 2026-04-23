@@ -1,0 +1,115 @@
+═══════════════════════════════════════════════════════════════
+  SOLUCIÓN: La App está Creada pero No Funciona
+═══════════════════════════════════════════════════════════════
+
+Si ves la página por defecto de Bluehost en lugar de tu app,
+sigue estos pasos en orden:
+
+✅ PASO 1: Verificar que los Archivos Están en el Lugar Correcto
+───────────────────────────────────────────────────────────────
+1. En File Manager, ve a: public_html/bingo/
+2. Verifica que veas estas carpetas:
+   ✓ app/
+   ✓ components/
+   ✓ lib/
+   ✓ hooks/
+   ✓ public/
+   ✓ styles/
+3. Verifica que veas estos archivos:
+   ✓ package.json
+   ✓ server.js
+   ✓ .env.local
+   ✓ next.config.mjs
+
+Si NO están ahí, muévelos a public_html/bingo/
+
+
+✅ PASO 2: Instalar Dependencias (CRÍTICO)
+───────────────────────────────────────────────────────────────
+1. En cPanel, busca "Terminal" o solicita acceso SSH
+2. Conéctate por SSH o usa el Terminal de cPanel
+3. Ejecuta estos comandos:
+
+   cd public_html/bingo
+   npm install --production
+   npm run build
+
+4. Espera a que termine (puede tardar 5-10 minutos)
+5. Si hay errores, cópialos y revísalos
+
+
+✅ PASO 3: Verificar Variables de Entorno
+───────────────────────────────────────────────────────────────
+1. En Node.js Selector, encuentra tu aplicación
+2. Haz clic en ella para editarla
+3. Busca "Environment Variables"
+4. Verifica que TODAS estas variables estén configuradas:
+
+   NODE_ENV=production
+   NEXT_PUBLIC_SUPABASE_URL=https://lwczeimcljkxsoukiwsa.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   NEXT_PUBLIC_APP_URL=https://thebingofortuna.com/bingo
+   JWT_SECRET=tu-clave-aqui
+   CRON_SECRET=tu-clave-aqui
+   PORT=3000
+
+5. Si faltan, agrégalas una por una
+6. Guarda los cambios
+
+
+✅ PASO 4: Reiniciar la Aplicación
+───────────────────────────────────────────────────────────────
+1. En Node.js Selector
+2. Encuentra tu aplicación "bingo"
+3. Haz clic en "Restart" o "Reload"
+4. Espera 30-60 segundos
+
+
+✅ PASO 5: Verificar Logs
+───────────────────────────────────────────────────────────────
+1. En Node.js Selector, haz clic en tu aplicación
+2. Busca "View Logs" o "Logs"
+3. Revisa si hay errores
+4. Los errores comunes son:
+   - "Cannot find module" → Falta npm install
+   - "Port already in use" → Cambia el puerto
+   - "Missing environment variables" → Agrega las variables
+
+
+✅ PASO 6: Verificar que la App Está Corriendo
+───────────────────────────────────────────────────────────────
+1. En Node.js Selector, tu aplicación debe mostrar:
+   - Estado: "Running" o "Active"
+   - No debe decir "Stopped" o "Error"
+2. Si dice "Stopped", haz clic en "Start"
+3. Si dice "Error", revisa los logs
+
+
+✅ PASO 7: Verificar la URL
+───────────────────────────────────────────────────────────────
+1. Abre: https://thebingofortuna.com/bingo
+2. Si aún ves la página de Bluehost:
+   - Espera 2-3 minutos (puede tardar en propagarse)
+   - Prueba en modo incógnito
+   - Limpia la caché del navegador (Ctrl+Shift+Delete)
+3. Si ves errores, revisa la consola del navegador (F12)
+
+
+🔍 VERIFICACIÓN RÁPIDA:
+───────────────────────────────────────────────────────────────
+Ejecuta estos comandos en SSH/Terminal:
+
+   cd public_html/bingo
+   ls -la                    # Debe mostrar todos los archivos
+   cat package.json         # Debe mostrar el contenido
+   node --version           # Debe mostrar la versión de Node
+   npm --version            # Debe mostrar la versión de npm
+
+Si alguno falla, ese es el problema.
+
+
+═══════════════════════════════════════════════════════════════
+MÁS COMÚN: Falta ejecutar "npm install" y "npm run build"
+═══════════════════════════════════════════════════════════════
+

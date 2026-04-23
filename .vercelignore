@@ -1,0 +1,14 @@
+# Large files
+styles.zip
+*.zip
+*.log
+*.tmp
+
+# Deployment artifacts
+bluehost-deploy/
+
+# Standard ignores
+node_modules/
+.next/
+.git/
+.env

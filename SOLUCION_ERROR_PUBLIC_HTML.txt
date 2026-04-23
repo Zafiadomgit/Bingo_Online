@@ -1,0 +1,70 @@
+═══════════════════════════════════════════════════════════════
+  SOLUCIÓN: Error "Directory public_html not allowed"
+═══════════════════════════════════════════════════════════════
+
+❌ PROBLEMA:
+Bluehost NO permite usar "public_html" directamente como 
+Application Root para Node.js.
+
+✅ SOLUCIÓN - OPCIÓN 1 (Recomendada):
+───────────────────────────────────────────────────────────────
+Usar una subcarpeta dentro de public_html:
+
+1. En File Manager de cPanel:
+   - Ve a public_html
+   - Crea una carpeta llamada "bingo"
+   - Sube TODOS los archivos dentro de "bingo/"
+
+2. En Node.js Selector:
+   - Application Root: /home/thebingo/public_html/bingo
+   - Application URL: /bingo
+   - Application Startup File: server.js
+
+3. Tu sitio estará en: https://thebingofortuna.com/bingo
+
+
+✅ SOLUCIÓN - OPCIÓN 2:
+───────────────────────────────────────────────────────────────
+Usar un directorio fuera de public_html:
+
+1. En File Manager de cPanel:
+   - Ve a la carpeta HOME (arriba de public_html)
+   - Crea una carpeta llamada "bingo-app"
+   - Sube TODOS los archivos dentro de "bingo-app/"
+
+2. En Node.js Selector:
+   - Application Root: /home/thebingo/bingo-app
+   - Application URL: /
+   - Application Startup File: server.js
+
+3. Tu sitio estará en: https://thebingofortuna.com
+
+
+✅ SOLUCIÓN - OPCIÓN 3 (Si quieres en la raíz):
+───────────────────────────────────────────────────────────────
+Si quieres que funcione directamente en thebingofortuna.com:
+
+1. En File Manager:
+   - Ve a HOME (no public_html)
+   - Crea carpeta "nodejs-app" o "bingo-app"
+   - Sube los archivos ahí
+
+2. En Node.js Selector:
+   - Application Root: /home/thebingo/nodejs-app
+   - Application URL: /
+   - Application Startup File: server.js
+
+3. Configura redirección en public_html:
+   - Crea archivo .htaccess en public_html con:
+   
+   RewriteEngine On
+   RewriteRule ^(.*)$ http://localhost:PUERTO/$1 [P,L]
+   
+   (Reemplaza PUERTO con el puerto que asigne Node.js Selector)
+
+
+═══════════════════════════════════════════════════════════════
+RECOMENDACIÓN: Usa la OPCIÓN 1 (subcarpeta bingo)
+Es la más simple y funciona inmediatamente.
+═══════════════════════════════════════════════════════════════
+

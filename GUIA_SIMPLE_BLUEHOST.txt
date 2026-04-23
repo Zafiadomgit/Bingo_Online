@@ -1,0 +1,140 @@
+═══════════════════════════════════════════════════════════════
+  GUÍA SIMPLE PARA BLUEHOST (Paso a Paso)
+═══════════════════════════════════════════════════════════════
+
+Sigue estos pasos EN ORDEN. No te saltes ninguno.
+
+═══════════════════════════════════════════════════════════════
+PASO 1: SUBIR ARCHIVOS (5 minutos)
+═══════════════════════════════════════════════════════════════
+
+1. Abre File Manager en cPanel
+2. Ve a: public_html
+3. Crea una carpeta llamada: bingo
+4. Abre la carpeta "bingo"
+5. Sube TODOS los archivos de "bluehost-deploy" dentro de "bingo"
+   (Puedes subir un ZIP y extraerlo ahí)
+
+VERIFICA que dentro de "bingo" veas:
+   ✓ app/
+   ✓ components/
+   ✓ package.json
+   ✓ server.js
+   ✓ .env.local
+
+
+═══════════════════════════════════════════════════════════════
+PASO 2: INSTALAR DEPENDENCIAS (10 minutos) ⚠️ CRÍTICO
+═══════════════════════════════════════════════════════════════
+
+1. En cPanel, busca "Terminal" (o solicita acceso SSH)
+2. Abre el Terminal
+3. Copia y pega estos comandos UNO POR UNO:
+
+   cd public_html/bingo
+   npm install --production
+   npm run build
+
+4. ESPERA a que termine cada comando
+5. Si ves errores, cópialos y revísalos
+6. Cuando termine, verás mensajes de éxito
+
+
+═══════════════════════════════════════════════════════════════
+PASO 3: CREAR APLICACIÓN NODE.JS (3 minutos)
+═══════════════════════════════════════════════════════════════
+
+1. En cPanel, busca "Node.js Selector"
+2. Haz clic en "CREATE APPLICATION"
+3. Llena el formulario:
+
+   Node.js Version: 20.19.4 (o la más reciente)
+   Application Mode: Production
+   Application Root: /home/thebingo/public_html/bingo
+   Application URL: /bingo
+   Application Startup File: server.js
+   Passenger log file: /home/thebingo/
+
+4. Haz clic en "CREATE"
+5. Si da error, verifica que la ruta sea exacta
+
+
+═══════════════════════════════════════════════════════════════
+PASO 4: CONFIGURAR VARIABLES (5 minutos)
+═══════════════════════════════════════════════════════════════
+
+1. En Node.js Selector, encuentra tu aplicación "bingo"
+2. Haz clic en ella para editarla
+3. Busca "Environment Variables" o "Variables de Entorno"
+4. Agrega estas variables UNA POR UNA:
+
+   NODE_ENV = production
+
+   NEXT_PUBLIC_SUPABASE_URL = https://lwczeimcljkxsoukiwsa.supabase.co
+
+   NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzUwNzEsImV4cCI6MjA3NDY1MTA3MX0.0pBwQndN3kliELCoKSBZnCDRpqny_o8cGKUSQLYPfT8
+
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTA3NTA3MSwiZXhwIjoyMDc0NjUxMDcxfQ.WTWloMV7APc_NJBSWKiY2veMdxeogNkdaoPmXB_xnMM
+
+   NEXT_PUBLIC_APP_URL = https://thebingofortuna.com/bingo
+
+   JWT_SECRET = cualquier-texto-largo-y-aleatorio-aqui
+
+   CRON_SECRET = otro-texto-largo-y-aleatorio-aqui
+
+   PORT = 3000
+
+5. Guarda los cambios
+
+
+═══════════════════════════════════════════════════════════════
+PASO 5: REINICIAR Y VERIFICAR (2 minutos)
+═══════════════════════════════════════════════════════════════
+
+1. En Node.js Selector, encuentra tu aplicación
+2. Haz clic en "RESTART" o "RELOAD"
+3. Espera 30-60 segundos
+4. Verifica que el estado diga "Running" o "Active"
+5. Abre: https://thebingofortuna.com/bingo
+
+
+═══════════════════════════════════════════════════════════════
+SI AÚN NO FUNCIONA:
+═══════════════════════════════════════════════════════════════
+
+1. En Node.js Selector, haz clic en tu aplicación
+2. Busca "View Logs" o "Logs"
+3. Revisa los errores
+4. Los errores más comunes:
+
+   ❌ "Cannot find module"
+      → Solución: Ejecuta "npm install" de nuevo
+
+   ❌ "Port already in use"
+      → Solución: Cambia PORT a otro número (ej: 3001)
+
+   ❌ "Missing environment variables"
+      → Solución: Agrega todas las variables del Paso 4
+
+   ❌ "Build failed"
+      → Solución: Ejecuta "npm run build" de nuevo
+
+
+═══════════════════════════════════════════════════════════════
+CHECKLIST FINAL:
+═══════════════════════════════════════════════════════════════
+
+[ ] Archivos subidos a public_html/bingo/
+[ ] npm install ejecutado (sin errores)
+[ ] npm run build ejecutado (sin errores)
+[ ] Aplicación Node.js creada
+[ ] Todas las variables de entorno configuradas
+[ ] Aplicación reiniciada
+[ ] Estado muestra "Running"
+[ ] Sitio funciona en https://thebingofortuna.com/bingo
+
+
+═══════════════════════════════════════════════════════════════
+TIEMPO TOTAL: ~25 minutos
+═══════════════════════════════════════════════════════════════
+

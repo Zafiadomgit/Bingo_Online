@@ -1,0 +1,91 @@
+═══════════════════════════════════════════════════════════════
+  SOLUCIÓN: No Aparece Terminal/SSH en cPanel
+═══════════════════════════════════════════════════════════════
+
+Si no encuentras "Terminal" o "SSH Access", hay 3 opciones:
+
+═══════════════════════════════════════════════════════════════
+OPCIÓN 1: Usar "Application Manager" (Más Fácil)
+═══════════════════════════════════════════════════════════════
+
+1. En la búsqueda, haz clic en "Application Manager"
+   (Dice: "Deploy applications with Phusion Passenger®")
+2. Application Manager puede tener opción de instalar dependencias
+3. O puede tener un terminal integrado
+4. Prueba crear la aplicación ahí primero
+
+
+═══════════════════════════════════════════════════════════════
+OPCIÓN 2: Habilitar SSH (Recomendado)
+═══════════════════════════════════════════════════════════════
+
+1. En la sección "Seguridad", busca "SSH Access" o "Acceso SSH"
+2. Si no aparece, contacta a Bluehost:
+   - Ve a "Billing & Support" → "Contactar soporte"
+   - Pide que habiliten "SSH Access" en tu cuenta
+   - Generalmente lo hacen en 24 horas
+3. Una vez habilitado, aparecerá en "Seguridad"
+
+
+═══════════════════════════════════════════════════════════════
+OPCIÓN 3: Instalar Dependencias Localmente y Subir (Alternativa)
+═══════════════════════════════════════════════════════════════
+
+Si no puedes usar SSH, puedes hacer esto:
+
+1. En tu computadora, abre la carpeta "bluehost-deploy"
+2. Ejecuta:
+   npm install --production
+   npm run build
+3. Esto creará la carpeta "node_modules" y ".next"
+4. Sube TODO incluyendo:
+   - node_modules/ (puede ser grande, ~200MB)
+   - .next/ (carpeta de build)
+5. En Bluehost, crea la aplicación Node.js normalmente
+6. NO necesitas ejecutar npm install en el servidor
+
+⚠️ NOTA: Esto puede tardar mucho en subir (node_modules es pesado)
+
+
+═══════════════════════════════════════════════════════════════
+OPCIÓN 4: Usar "Setup Node.js App" Directamente
+═══════════════════════════════════════════════════════════════
+
+A veces "Setup Node.js App" puede instalar dependencias automáticamente:
+
+1. Sube los archivos a public_html/bingo/
+2. Ve a "Setup Node.js App"
+3. Crea la aplicación
+4. Algunas versiones de Bluehost instalan dependencias automáticamente
+5. Si no funciona, verás errores en los logs que te dirán qué falta
+
+
+═══════════════════════════════════════════════════════════════
+RECOMENDACIÓN:
+═══════════════════════════════════════════════════════════════
+
+1. PRIMERO: Intenta "Application Manager" o "Setup Node.js App"
+   y crea la aplicación. A veces instala dependencias solo.
+
+2. SEGUNDO: Si no funciona, contacta a Bluehost para habilitar SSH
+
+3. TERCERO: Como último recurso, instala localmente y sube todo
+
+
+═══════════════════════════════════════════════════════════════
+PASOS PARA PROBAR PRIMERO:
+═══════════════════════════════════════════════════════════════
+
+1. Sube los archivos a public_html/bingo/
+2. Ve a "Setup Node.js App"
+3. Crea la aplicación con estos datos:
+   - Application Root: /home/thebingo/public_html/bingo
+   - Application URL: /bingo
+   - Application Startup File: server.js
+4. Configura las variables de entorno
+5. Reinicia la aplicación
+6. Revisa los logs para ver si hay errores
+7. Si dice "Cannot find module", entonces SÍ necesitas SSH
+
+═══════════════════════════════════════════════════════════════
+

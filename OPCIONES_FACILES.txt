@@ -1,0 +1,93 @@
+═══════════════════════════════════════════════════════════════
+  OPCIONES MÁS FÁCILES PARA DESPLEGAR (Como Dreamhost)
+═══════════════════════════════════════════════════════════════
+
+✅ OPCIÓN 1: VERCEL (MUY FÁCIL - RECOMENDADO)
+───────────────────────────────────────────────────────────────
+Es GRATIS y MUY fácil, similar a Dreamhost:
+
+1. Ve a: https://vercel.com
+2. Inicia sesión con GitHub
+3. Haz clic en "New Project"
+4. Selecciona tu repositorio (o sube los archivos)
+5. Vercel detecta Next.js automáticamente
+6. Agrega las variables de entorno (copiar/pegar)
+7. Haz clic en "Deploy"
+8. ¡Listo! En 2 minutos está funcionando
+
+VENTAJAS:
+✓ Gratis
+✓ Automático (cada push a GitHub se despliega solo)
+✓ Optimizado para Next.js
+✓ SSL automático
+✓ Muy rápido
+✓ Sin configuración complicada
+
+URL será: https://tu-proyecto.vercel.app
+
+
+✅ OPCIÓN 2: RENDER (FÁCIL - GRATIS)
+───────────────────────────────────────────────────────────────
+También es GRATIS y fácil:
+
+1. Ve a: https://render.com
+2. Inicia sesión con GitHub
+3. Haz clic en "New +" → "Web Service"
+4. Selecciona tu repositorio
+5. Render detecta Next.js automáticamente
+6. Agrega las variables de entorno
+7. Haz clic en "Create Web Service"
+8. ¡Listo! En 5 minutos está funcionando
+
+VENTAJAS:
+✓ Gratis
+✓ Automático
+✓ Fácil de usar
+✓ SSL automático
+
+URL será: https://tu-proyecto.onrender.com
+
+
+✅ OPCIÓN 3: NETLIFY (FÁCIL - GRATIS)
+───────────────────────────────────────────────────────────────
+Similar a Vercel:
+
+1. Ve a: https://netlify.com
+2. Inicia sesión con GitHub
+3. Arrastra la carpeta "bluehost-deploy" o conecta GitHub
+4. Netlify detecta Next.js automáticamente
+5. Agrega variables de entorno
+6. ¡Listo!
+
+VENTAJAS:
+✓ Gratis
+✓ Muy fácil
+✓ Drag & drop (arrastrar y soltar)
+
+
+❌ BLUEHOST (Complicado - NO Recomendado para Next.js)
+───────────────────────────────────────────────────────────────
+Bluehost está diseñado para WordPress y sitios estáticos.
+Para Next.js requiere:
+✗ Configuración manual de Node.js
+✗ Instalación manual de dependencias
+✗ Build manual
+✗ Configuración de variables de entorno manual
+✗ Acceso SSH
+✗ Muchos pasos
+
+NO es ideal para aplicaciones Node.js/Next.js.
+
+
+═══════════════════════════════════════════════════════════════
+RECOMENDACIÓN: Usa VERCEL (es lo más fácil y gratis)
+═══════════════════════════════════════════════════════════════
+
+Si quieres, puedo preparar todo para Vercel en 2 minutos.
+Solo necesitas:
+1. Subir el código a GitHub (o darme acceso)
+2. Yo te doy los pasos exactos para Vercel
+3. En 5 minutos está funcionando
+
+¿Quieres que te prepare todo para Vercel?
+

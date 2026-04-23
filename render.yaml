@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: bingo-online
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false  # Debe configurarse manualmente en Render Dashboard
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false  # Debe configurarse manualmente en Render Dashboard
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false  # Debe configurarse manualmente en Render Dashboard
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://bingo-online.onrender.com
+      - key: JWT_SECRET
+        generateValue: true  # Render generará un valor aleatorio
+      - key: CRON_SECRET
+        generateValue: true  # Render generará un valor aleatorio (opcional)

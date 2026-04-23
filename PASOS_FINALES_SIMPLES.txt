@@ -1,0 +1,73 @@
+═══════════════════════════════════════════════════════════════
+  PASOS FINALES - Todo Listo para Subir
+═══════════════════════════════════════════════════════════════
+
+✅ TODO ESTÁ PREPARADO:
+───────────────────────────────────────────────────────────────
+✓ Dependencias instaladas (node_modules/)
+✓ Aplicación construida (.next/)
+✓ Archivos listos en: bluehost-deploy/
+
+
+📤 PASO 1: COMPRIMIR Y SUBIR (5 minutos)
+───────────────────────────────────────────────────────────────
+
+1. Abre la carpeta "bluehost-deploy"
+2. Selecciona TODOS los archivos y carpetas dentro
+   (Incluye: app/, components/, node_modules/, .next/, etc.)
+3. Comprímelos en un archivo ZIP
+4. En cPanel → File Manager → public_html
+5. Crea carpeta "bingo" (si no existe)
+6. Sube el ZIP dentro de "bingo"
+7. Extrae el ZIP (clic derecho → Extract)
+8. Elimina el ZIP
+
+
+⚙️ PASO 2: CREAR APLICACIÓN NODE.JS (3 minutos)
+───────────────────────────────────────────────────────────────
+
+1. En cPanel → "Setup Node.js App" (en Software)
+2. Haz clic en "CREATE APPLICATION"
+3. Configura:
+   - Application Root: /home/thebingo/public_html/bingo
+   - Application URL: /bingo
+   - Application Startup File: server.js
+   - Node.js Version: 20.19.4
+   - Application Mode: Production
+4. Haz clic en "CREATE"
+
+
+🔧 PASO 3: VARIABLES DE ENTORNO (5 minutos)
+───────────────────────────────────────────────────────────────
+
+En Node.js Selector, agrega estas variables:
+
+   NODE_ENV = production
+   NEXT_PUBLIC_SUPABASE_URL = https://lwczeimcljkxsoukiwsa.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzUwNzEsImV4cCI6MjA3NDY1MTA3MX0.0pBwQndN3kliELCoKSBZnCDRpqny_o8cGKUSQLYPfT8
+   SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTA3NTA3MSwiZXhwIjoyMDc0NjUxMDcxfQ.WTWloMV7APc_NJBSWKiY2veMdxeogNkdaoPmXB_xnMM
+   SUPABASE_URL = https://lwczeimcljkxsoukiwsa.supabase.co
+   SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3Y3plaW1jbGpreHNvdWtpd3NhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNzUwNzEsImV4cCI6MjA3NDY1MTA3MX0.0pBwQndN3kliELCoKSBZnCDRpqny_o8cGKUSQLYPfT8
+   NEXT_PUBLIC_APP_URL = https://thebingofortuna.com/bingo
+   JWT_SECRET = cualquier-texto-largo-aqui
+   CRON_SECRET = otro-texto-largo-aqui
+   PORT = 3000
+
+
+🔄 PASO 4: REINICIAR (1 minuto)
+───────────────────────────────────────────────────────────────
+
+1. En Node.js Selector, haz clic en "RESTART"
+2. Espera 30 segundos
+3. Abre: https://thebingofortuna.com/bingo
+
+
+✅ ¡LISTO!
+───────────────────────────────────────────────────────────────
+
+No necesitas ejecutar npm install ni npm run build en el servidor.
+Todo ya está instalado y construido en la carpeta bluehost-deploy/.
+
+
+═══════════════════════════════════════════════════════════════
+

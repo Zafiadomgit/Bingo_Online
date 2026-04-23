@@ -1,0 +1,421 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Paleta de colores exacta del logo del Bingo Casino */
+  --background: #F2E394; /* Amarillo crema claro */
+  --foreground: #121D40; /* Azul marino muy oscuro */
+  --card: #F2E394; /* Amarillo crema claro */
+  --card-foreground: #121D40; /* Azul marino muy oscuro */
+  --popover: #F2E394; /* Amarillo crema claro */
+  --popover-foreground: #121D40; /* Azul marino muy oscuro */
+  --primary: #143C8C; /* Azul real vibrante */
+  --primary-foreground: #F2E394; /* Amarillo crema claro */
+  --secondary: #123273; /* Azul zafiro profundo */
+  --secondary-foreground: #F2E394; /* Amarillo crema claro */
+  --muted: #F2E394; /* Amarillo crema claro */
+  --muted-foreground: #121D40; /* Azul marino muy oscuro */
+  --accent: #D9A13B; /* Amarillo dorado cálido */
+  --accent-foreground: #121D40; /* Azul marino muy oscuro */
+  --destructive: #121D40; /* Azul marino muy oscuro */
+  --destructive-foreground: #F2E394; /* Amarillo crema claro */
+  --border: #D9A13B; /* Amarillo dorado cálido */
+  --input: #F2E394; /* Amarillo crema claro */
+  --ring: #143C8C; /* Azul real vibrante */
+  --chart-1: #121D40; /* Azul marino muy oscuro */
+  --chart-2: #143C8C; /* Azul real vibrante */
+  --chart-3: #123273; /* Azul zafiro profundo */
+  --chart-4: #F2E394; /* Amarillo crema claro */
+  --chart-5: #D9A13B; /* Amarillo dorado cálido */
+  --radius: 1rem;
+  --sidebar: #F2E394; /* Sidebar amarillo crema claro */
+  --sidebar-foreground: #121D40; /* Sidebar texto azul marino */
+  --sidebar-primary: #143C8C; /* Sidebar primary azul real */
+  --sidebar-primary-foreground: #F2E394; /* Sidebar primary texto amarillo crema */
+  --sidebar-accent: #D9A13B; /* Sidebar accent amarillo dorado */
+  --sidebar-accent-foreground: #121D40; /* Sidebar accent texto azul marino */
+  --sidebar-border: #D9A13B; /* Sidebar border amarillo dorado */
+  --sidebar-ring: #143C8C; /* Sidebar ring azul real */
+}
+
+.dark {
+  /* Tema oscuro basado en la paleta exacta del logo */
+  --background: #121D40; /* Fondo azul marino muy oscuro */
+  --foreground: #F2E394; /* Texto amarillo crema claro */
+  --card: #123273; /* Card azul zafiro profundo */
+  --card-foreground: #F2E394; /* Card texto amarillo crema */
+  --popover: #123273; /* Popover azul zafiro profundo */
+  --popover-foreground: #F2E394; /* Popover texto amarillo crema */
+  --primary: #D9A13B; /* Primary amarillo dorado cálido */
+  --primary-foreground: #121D40; /* Primary texto azul marino */
+  --secondary: #143C8C; /* Secondary azul real vibrante */
+  --secondary-foreground: #F2E394; /* Secondary texto amarillo crema */
+  --muted: #123273; /* Muted azul zafiro profundo */
+  --muted-foreground: #D9A13B; /* Muted texto amarillo dorado */
+  --accent: #F2E394; /* Accent amarillo crema claro */
+  --accent-foreground: #121D40; /* Accent texto azul marino */
+  --destructive: #121D40; /* Destructive azul marino */
+  --destructive-foreground: #F2E394; /* Destructive texto amarillo crema */
+  --border: #143C8C; /* Border azul real vibrante */
+  --input: #123273; /* Input azul zafiro profundo */
+  --ring: #D9A13B; /* Ring amarillo dorado */
+  --chart-1: #121D40; /* Azul marino muy oscuro */
+  --chart-2: #143C8C; /* Azul real vibrante */
+  --chart-3: #123273; /* Azul zafiro profundo */
+  --chart-4: #F2E394; /* Amarillo crema claro */
+  --chart-5: #D9A13B; /* Amarillo dorado cálido */
+  --sidebar: #121D40; /* Sidebar azul marino muy oscuro */
+  --sidebar-foreground: #F2E394; /* Sidebar texto amarillo crema */
+  --sidebar-primary: #D9A13B; /* Sidebar primary amarillo dorado */
+  --sidebar-primary-foreground: #121D40; /* Sidebar primary texto azul marino */
+  --sidebar-accent: #123273; /* Sidebar accent azul zafiro */
+  --sidebar-accent-foreground: #F2E394; /* Sidebar accent texto amarillo crema */
+  --sidebar-border: #143C8C; /* Sidebar border azul real */
+  --sidebar-ring: #D9A13B; /* Sidebar ring amarillo dorado */
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Tipografía moderna con mejor legibilidad */
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.01em;
+  }
+
+  /* Estilos modernos para headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: -0.02em;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 6vw, 4rem);
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    line-height: 1.3;
+  }
+}
+
+/* Animaciones modernas y suaves */
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(var(--primary), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(var(--primary), 0.8);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.6s ease-out;
+}
+
+/* Efectos glassmorphism modernos */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hover effects modernos */
+.modern-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Animaciones para ganadores */
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti {
+  animation: confetti 3s linear infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes bounce-small {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce-small {
+  animation: bounce-small 1s ease-in-out infinite;
+}
+
+/* Animation delays para evitar warnings de hidratación */
+.animate-delay-0\.5s {
+  animation-delay: 0.5s;
+}
+
+.animate-delay-1s {
+  animation-delay: 1s;
+}
+
+.animate-delay-2s {
+  animation-delay: 2s;
+}
+
+/* Confetti colors and positions */
+.confetti-0 {
+  background-color: #ff6b6b;
+  left: 10%;
+  top: 20%;
+  animation-delay: 0s;
+}
+
+.confetti-1 {
+  background-color: #4ecdc4;
+  left: 30%;
+  top: 10%;
+  animation-delay: 0.2s;
+}
+
+.confetti-2 {
+  background-color: #45b7d1;
+  left: 50%;
+  top: 30%;
+  animation-delay: 0.4s;
+}
+
+.confetti-3 {
+  background-color: #96ceb4;
+  left: 70%;
+  top: 15%;
+  animation-delay: 0.6s;
+}
+
+.confetti-4 {
+  background-color: #feca57;
+  left: 90%;
+  top: 25%;
+  animation-delay: 0.8s;
+}
+
+/* Toaster variables */
+.toaster {
+  --normal-bg: var(--popover);
+  --normal-text: var(--popover-foreground);
+  --normal-border: var(--border);
+}
+
+/* Toast viewport styles */
+.toast-viewport {
+  pointer-events: none !important;
+}
+
+/* Override Radix UI styles */
+[data-radix-toast-viewport] {
+  pointer-events: none !important;
+}
