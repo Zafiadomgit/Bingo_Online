@@ -806,7 +806,7 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                   <CardHeader>
                     <CardTitle className="text-gray-800 flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
-                      Juegos Terminados ({games.filter(g => g.status === 'FINISHED').length})
+                      Últimos Juegos Terminados ({Math.min(games.filter(g => g.status === 'FINISHED').length, 3)})
                     </CardTitle>
                     <CardDescription>
                       Historial de sorteos completados con información de ganadores
@@ -820,7 +820,11 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                         <p className="text-gray-600">Los juegos terminados aparecerán aquí con información de ganadores</p>
                       </div>
                     ) : (
-                      games.filter(g => g.status === 'FINISHED').map((game) => (
+                      games
+                        .filter(g => g.status === 'FINISHED')
+                        .sort((a, b) => new Date(b.finished_at || b.created_at).getTime() - new Date(a.finished_at || a.created_at).getTime())
+                        .slice(0, 3)
+                        .map((game) => (
                         <Card key={game.id} className="bg-white border-2 border-gray-200">
                           <CardHeader>
                             <div className="flex items-center justify-between">
@@ -830,9 +834,19 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                                   Terminado el {new Date(game.finished_at).toLocaleString('es-ES')}
                                 </CardDescription>
                               </div>
-                              <Badge variant="outline" className="text-gray-600 border-gray-300">
-                                Terminado
-                              </Badge>
+                              <div className="flex flex-col items-end gap-2">
+                                <Badge variant="outline" className="text-gray-600 border-gray-300">
+                                  Terminado
+                                </Badge>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleDeleteGame(game.id)}
+                                  className="text-red-600 border-red-300 hover:bg-red-100 h-7 text-xs"
+                                >
+                                  🗑️ Borrar Historial
+                                </Button>
+                              </div>
                             </div>
                           </CardHeader>
                           <CardContent>

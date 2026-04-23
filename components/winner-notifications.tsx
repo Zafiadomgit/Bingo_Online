@@ -85,6 +85,9 @@ export function WinnerNotifications({ userEmail }: WinnerNotificationsProps) {
                     </span>
                   </div>
                 </div>
+                <p className="text-white/90 text-xs mt-2 font-medium">
+                  📞 Contacta al 04121980898 para reclamar tu premio
+                </p>
               </div>
               
               <Button
@@ -102,3 +105,4 @@ export function WinnerNotifications({ userEmail }: WinnerNotificationsProps) {
     </div>
   )
 }
+
