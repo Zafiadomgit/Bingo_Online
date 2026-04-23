@@ -46,6 +46,7 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
   const [transferImage, setTransferImage] = useState<File | null>(null)
   const [selectedCardNumbers, setSelectedCardNumbers] = useState<number[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
   const { toast } = useToast()
 
   // Cargar promotores desde la base de datos
@@ -154,28 +155,33 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate fields
+    const quantity = getNumericQuantity()
+    const newErrors: Record<string, boolean> = {}
+    
+    if (!formData.nombres.trim()) newErrors.nombres = true
+    if (!formData.apellidos.trim()) newErrors.apellidos = true
+    if (!formData.email.trim()) newErrors.email = true
+    if (!formData.telefono.trim()) newErrors.telefono = true
+    if (!formData.cedula.trim()) newErrors.cedula = true
+    if (!quantity) newErrors.cantidadCartones = true
+    if (!formData.numeroReferencia.trim()) newErrors.numeroReferencia = true
+    if (!transferImage) newErrors.transferImage = true
+    if (quantity && selectedCardNumbers.length !== quantity) newErrors.selectedCardNumbers = true
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      toast({
+        title: "Campos incompletos",
+        description: "Por favor, completa todos los campos marcados en rojo.",
+        variant: "destructive" // Note: Assuming standard shadcn toast variant if present, or just default styling
+      })
+      return
+    }
+    
+    setErrors({})
     setIsSubmitting(true)
-
-        // Validar que la imagen sea obligatoria
-        if (!transferImage) {
-          toast({
-            title: "Error",
-            description: "Debes subir una imagen del comprobante de transferencia",
-          })
-          setIsSubmitting(false)
-          return
-        }
-
-        // Validar que se hayan seleccionado todos los números de cartón
-        const quantity = getNumericQuantity()
-        if (!quantity || selectedCardNumbers.length !== quantity) {
-          toast({
-            title: "Error",
-            description: `Debes seleccionar ${quantity || 1} número${(quantity || 1) > 1 ? 's' : ''} de cartón`,
-          })
-          setIsSubmitting(false)
-          return
-        }
 
     try {
       const formDataToSend = new FormData()
@@ -288,35 +294,37 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nombres" className="text-sm font-semibold">Nombres *</Label>
+                  <Label htmlFor="nombres" className={`text-sm font-semibold ${errors.nombres ? 'text-red-500' : ''}`}>Nombres *</Label>
                   <Input
                     id="nombres"
                     name="nombres"
                     value={formData.nombres}
                     onChange={handleInputChange}
                     required
-                    className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                    className={`rounded-lg border-2 ${errors.nombres ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="Tu nombre"
                   />
+                  {errors.nombres && <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="apellidos" className="text-sm font-semibold">Apellidos *</Label>
+                  <Label htmlFor="apellidos" className={`text-sm font-semibold ${errors.apellidos ? 'text-red-500' : ''}`}>Apellidos *</Label>
                   <Input
                     id="apellidos"
                     name="apellidos"
                     value={formData.apellidos}
                     onChange={handleInputChange}
                     required
-                    className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                    className={`rounded-lg border-2 ${errors.apellidos ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="Tus apellidos"
                   />
+                  {errors.apellidos && <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold">Email *</Label>
+                  <Label htmlFor="email" className={`text-sm font-semibold ${errors.email ? 'text-red-500' : ''}`}>Email *</Label>
                   <Input
                     id="email"
                     name="email"
@@ -324,41 +332,44 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                    className={`rounded-lg border-2 ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="tu@email.com"
                   />
+                  {errors.email && <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="telefono" className="text-sm font-semibold">Teléfono *</Label>
+                  <Label htmlFor="telefono" className={`text-sm font-semibold ${errors.telefono ? 'text-red-500' : ''}`}>Teléfono *</Label>
                   <Input
                     id="telefono"
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleInputChange}
                     required
-                    className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                    className={`rounded-lg border-2 ${errors.telefono ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="+58 412 123 4567"
                   />
+                  {errors.telefono && <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cedula" className="text-sm font-semibold">Cédula *</Label>
+                  <Label htmlFor="cedula" className={`text-sm font-semibold ${errors.cedula ? 'text-red-500' : ''}`}>Cédula *</Label>
                   <Input
                     id="cedula"
                     name="cedula"
                     value={formData.cedula}
                     onChange={handleInputChange}
                     required
-                    className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                    className={`rounded-lg border-2 ${errors.cedula ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="V-12345678"
                   />
+                  {errors.cedula && <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="cantidadCartones" className="text-sm font-semibold">Cantidad de Cartones *</Label>
+                  <Label htmlFor="cantidadCartones" className={`text-sm font-semibold ${errors.cantidadCartones ? 'text-red-500' : ''}`}>Cantidad de Cartones *</Label>
                   <Input
                     id="cantidadCartones"
                     name="cantidadCartones"
@@ -367,8 +378,9 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
                     value={formData.cantidadCartones}
                     onChange={handleInputChange}
                     required
-                    className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                    className={`rounded-lg border-2 ${errors.cantidadCartones ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   />
+                  {errors.cantidadCartones && <p className="text-xs text-red-500 font-medium">Ingresa una cantidad válida</p>}
                 </div>
               </div>
 
@@ -388,19 +400,23 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="numeroReferencia" className="text-sm font-semibold">Número de Referencia de Pago *</Label>
+                <Label htmlFor="numeroReferencia" className={`text-sm font-semibold ${errors.numeroReferencia ? 'text-red-500' : ''}`}>Número de Referencia de Pago *</Label>
                 <Input
                   id="numeroReferencia"
                   name="numeroReferencia"
                   value={formData.numeroReferencia}
                   onChange={handleInputChange}
                   required
-                  className="rounded-lg border-2 border-gray-300 focus:border-green-500"
+                  className={`rounded-lg border-2 ${errors.numeroReferencia ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   placeholder="Ej: REF123456789"
                 />
-                <p className="text-xs text-gray-500">
-                  Ingresa el número de referencia que aparece en tu comprobante de transferencia
-                </p>
+                {errors.numeroReferencia ? (
+                  <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>
+                ) : (
+                  <p className="text-xs text-gray-500">
+                    Ingresa el número de referencia que aparece en tu comprobante de transferencia
+                  </p>
+                )}
               </div>
 
             </div>
@@ -456,13 +472,23 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
             </div>
 
                 {/* Selección de Número de Cartón */}
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <div className={`space-y-4 p-4 rounded-xl border-2 transition-colors ${errors.selectedCardNumbers ? 'border-red-400 bg-red-50' : 'border-transparent'}`}>
+                  <h3 className={`text-xl font-bold flex items-center gap-2 ${errors.selectedCardNumbers ? 'text-red-600' : 'text-gray-800'}`}>
                     <CreditCard className="w-5 h-5" />
                     Seleccionar Número de Cartón *
                   </h3>
+                  {errors.selectedCardNumbers && (
+                    <p className="text-sm text-red-600 font-medium">
+                      Debes seleccionar {getNumericQuantity()} cartón{getNumericQuantity() > 1 ? 'es' : ''} para continuar.
+                    </p>
+                  )}
                   <CardNumberSelector
-                    onSelect={setSelectedCardNumbers}
+                    onSelect={(numbers) => {
+                      setSelectedCardNumbers(numbers)
+                      if (errors.selectedCardNumbers && numbers.length === getNumericQuantity()) {
+                        setErrors(prev => ({ ...prev, selectedCardNumbers: false }))
+                      }
+                    }}
                     selectedNumbers={selectedCardNumbers}
                     userEmail={formData.email}
                     quantity={getNumericQuantity()}
@@ -474,7 +500,7 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
 
                 {/* Carga de Comprobante */}
                 <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <h3 className={`text-xl font-bold flex items-center gap-2 ${errors.transferImage ? 'text-red-600' : 'text-gray-800'}`}>
                     <Upload className="w-5 h-5" />
                     Comprobante de Transferencia *
                   </h3>
@@ -482,7 +508,9 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
               <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                 transferImage 
                   ? 'border-green-400 bg-green-50' 
-                  : 'border-red-300 bg-red-50 hover:border-red-400'
+                  : errors.transferImage
+                  ? 'border-red-500 bg-red-50'
+                  : 'border-gray-300 bg-gray-50 hover:border-gray-400'
               }`}>
                 <input
                   type="file"
@@ -495,10 +523,11 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
                   htmlFor="transferImage"
                   className="cursor-pointer flex flex-col items-center gap-2"
                 >
-                  <Upload className={`w-8 h-8 ${transferImage ? 'text-green-500' : 'text-red-400'}`} />
-                  <span className={`font-medium ${transferImage ? 'text-green-700' : 'text-red-600'}`}>
-                    {transferImage ? "✅ Imagen cargada" : "⚠️ Haz clic para subir imagen (OBLIGATORIO)"}
+                  <Upload className={`w-8 h-8 ${transferImage ? 'text-green-500' : errors.transferImage ? 'text-red-500' : 'text-gray-400'}`} />
+                  <span className={`font-medium ${transferImage ? 'text-green-700' : errors.transferImage ? 'text-red-600' : 'text-gray-600'}`}>
+                    {transferImage ? "✅ Imagen cargada" : "Haz clic para subir imagen (OBLIGATORIO)"}
                   </span>
+                  {errors.transferImage && <p className="text-xs text-red-500 font-bold">¡El comprobante es requerido!</p>}
                   <span className="text-sm text-gray-500">
                     PNG, JPG, JPEG (máx. 5MB)
                   </span>
@@ -529,21 +558,14 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
               </Button>
                   <Button
                     type="submit"
-                    disabled={isSubmitting || !transferImage || selectedCardNumbers.length !== getNumericQuantity() || !canPurchase}
+                    disabled={isSubmitting || !canPurchase}
                     className={`flex-1 rounded-lg font-bold py-3 ${
-                      !transferImage || selectedCardNumbers.length !== getNumericQuantity() || !canPurchase
+                      !canPurchase
                         ? 'bg-gray-400 cursor-not-allowed' 
                         : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600'
                     } text-white`}
                   >
-                    {isSubmitting 
-                      ? "Enviando..." 
-                      : !transferImage 
-                        ? "Sube una imagen primero" 
-                        : selectedCardNumbers.length !== getNumericQuantity()
-                          ? `Selecciona ${getNumericQuantity()} número${getNumericQuantity() > 1 ? 's' : ''} de cartón`
-                          : "Enviar Solicitud"
-                    }
+                    {isSubmitting ? "Enviando..." : "Enviar Solicitud"}
                   </Button>
             </div>
           </form>

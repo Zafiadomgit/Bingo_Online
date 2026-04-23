@@ -60,38 +60,40 @@ export function WinnerNotifications({ userEmail }: WinnerNotificationsProps) {
   if (isLoading || notifications.length === 0) return null
 
   return (
-    <div className="space-y-3 mb-6">
+    <div className="space-y-2 mb-4 w-full max-w-md mx-auto">
       {notifications.map(n => (
-        <Card key={n.id} className="bg-gradient-to-r from-yellow-400 to-orange-400 border-4 border-yellow-300 shadow-2xl">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between gap-4">
+        <Card key={n.id} className="bg-gradient-to-r from-yellow-500 to-orange-500 border border-yellow-400 shadow-lg">
+          <CardContent className="p-3">
+            <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-2xl">🎉</span>
-                  <h3 className="text-xl font-black text-white">¡GANASTE UN PREMIO!</h3>
+                  <span className="text-base">🎉</span>
+                  <h3 className="text-sm font-bold text-white tracking-wide">¡GANASTE UN PREMIO!</h3>
                 </div>
-                <p className="text-white font-bold text-lg">{getPrizeLabel(n.prize_type)}</p>
-                <p className="text-white/90 text-sm mt-1">
-                  Sorteo: <span className="font-semibold">{n.game_name}</span>
-                </p>
-                <p className="text-white/90 text-sm">
-                  Cartón: <span className="font-semibold">#{n.card_number}</span>
-                </p>
-                <div className="mt-2 bg-white/20 rounded-lg px-3 py-2 inline-block">
-                  <span className="text-white font-black text-2xl">
-                    {formatCurrencyWithSymbol(n.prize_amount, n.currency as any)}
-                  </span>
+                
+                <div className="flex justify-between items-end mt-1">
+                  <div>
+                    <p className="text-white font-semibold text-sm">{getPrizeLabel(n.prize_type)}</p>
+                    <p className="text-white/90 text-xs mt-0.5">
+                      Sorteo: {n.game_name} • Cartón: #{n.card_number}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-white/20 rounded px-2 py-1 ml-2">
+                    <span className="text-white font-bold text-sm">
+                      {formatCurrencyWithSymbol(n.prize_amount, n.currency as any)}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-white/80 text-xs mt-2">
-                  📞 Contacta al administrador para reclamar tu premio
-                </p>
               </div>
+              
               <Button
                 onClick={() => dismiss(n.id)}
                 variant="ghost"
-                className="text-white hover:bg-white/20 hover:text-white font-bold px-3 py-1 rounded-full text-sm shrink-0"
+                className="h-6 w-6 p-0 text-white hover:bg-white/20 hover:text-white shrink-0 rounded-full"
+                aria-label="Descartar"
               >
-                ✕ Descartar
+                ✕
               </Button>
             </div>
           </CardContent>

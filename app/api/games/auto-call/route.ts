@@ -47,6 +47,33 @@ async function saveWinnerNotification(userId: string, gameId: string, gameName: 
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    
+    // 1. Evitar notificaciones duplicadas para el mismo cartón y premio
+    const checkRes = await fetch(`${supabaseUrl}/rest/v1/winner_notifications?game_id=eq.${gameId}&prize_type=eq.${prizeType}&card_number=eq.${cardNumber}`, {
+      headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
+      cache: 'no-store'
+    })
+    if (checkRes.ok) {
+      const existing = await checkRes.json()
+      if (existing && existing.length > 0) return; // Ya existe esta notificación exacta
+    }
+
+    // 2. Verificar límites globales para evitar spam si hay concurrencia
+    let maxLimit = 999;
+    if (prizeType === 'full_card') maxLimit = 1;
+    if (prizeType === 'line' || prizeType === 'two_lines') maxLimit = 2;
+
+    if (maxLimit < 999) {
+      const limitRes = await fetch(`${supabaseUrl}/rest/v1/winner_notifications?game_id=eq.${gameId}&prize_type=eq.${prizeType}`, {
+        headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
+        cache: 'no-store'
+      })
+      if (limitRes.ok) {
+        const existingType = await limitRes.json()
+        if (existingType && existingType.length >= maxLimit) return; // Límite alcanzado
+      }
+    }
+
     await fetch(`${supabaseUrl}/rest/v1/winner_notifications`, {
       method: 'POST',
       headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'resolution=ignore-duplicates,return=minimal' },

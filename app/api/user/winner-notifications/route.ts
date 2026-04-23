@@ -28,11 +28,29 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ success: true, notifications: [] })
 
     // Obtener notificaciones no descartadas (dismissed_at IS NULL)
-    const notifications = await supabaseFetch(
+    const rawNotifications = await supabaseFetch(
       `winner_notifications?user_id=eq.${userId}&dismissed_at=is.null&order=won_at.desc`
     ) || []
 
-    return NextResponse.json({ success: true, notifications })
+    // Deduplicar notificaciones por si la base de datos tiene duplicados previos al fix
+    const uniqueNotifications: any[] = []
+    const seen = new Set()
+    
+    for (const n of rawNotifications) {
+      const key = `${n.game_id}_${n.prize_type}_${n.card_number}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        uniqueNotifications.push(n)
+      } else {
+        // Opcional: auto descartar el duplicado silenciosamente
+        supabaseFetch(`winner_notifications?id=eq.${n.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ dismissed_at: new Date().toISOString() })
+        }).catch(() => {})
+      }
+    }
+
+    return NextResponse.json({ success: true, notifications: uniqueNotifications })
   } catch (error: any) {
     console.error('Error fetching winner notifications:', error)
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
