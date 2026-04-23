@@ -70,7 +70,7 @@ export async function DELETE(request: NextRequest) {
     // Eliminar dependencias en orden antes de borrar el juego
     await supabaseFetch(`bingo_cards?game_id=eq.${gameId}`, { method: 'DELETE' })
     await supabaseFetch(`purchase_requests?game_id=eq.${gameId}`, { method: 'DELETE' })
-    await supabaseFetch(`game_notifications?game_id=eq.${gameId}`, { method: 'DELETE' })
+    await supabaseFetch(`winner_notifications?game_id=eq.${gameId}`, { method: 'DELETE' })
     await supabaseFetch(`bingo_games?id=eq.${gameId}`, { method: 'DELETE' })
 
     return NextResponse.json({ success: true, message: 'Juego eliminado' })

@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     // Eliminar dependencias en orden
     await supabaseFetch(`bingo_cards?game_id=eq.${gameId}`, { method: 'DELETE' })
     await supabaseFetch(`card_numbers?game_id=eq.${gameId}`, { method: 'DELETE' })
-    await supabaseFetch(`game_notifications?game_id=eq.${gameId}`, { method: 'DELETE' })
+    await supabaseFetch(`winner_notifications?game_id=eq.${gameId}`, { method: 'DELETE' })
     await supabaseFetch(`purchase_requests?game_id=eq.${gameId}`, { method: 'DELETE' })
 
     // Eliminar el juego
