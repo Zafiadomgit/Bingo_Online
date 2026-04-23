@@ -830,6 +830,55 @@ export default function AdminPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Últimos Juegos Terminados */}
+          <Card className="backdrop-blur-sm shadow-2xl transition-all duration-300 animate-fade-in relative hover:z-50 mb-12" style={{backgroundColor: 'rgba(242, 227, 148, 0.9)', border: '4px solid #D9A13B'}}>
+            <CardHeader className="p-4 rounded-t-lg" style={{backgroundColor: '#D9A13B'}}>
+              <CardTitle className="text-xl text-center font-bold uppercase" style={{color: '#121D40'}}>
+                🏆 ÚLTIMOS JUEGOS TERMINADOS
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              {games.filter(g => g.status === 'FINISHED').length === 0 ? (
+                <div className="text-center py-4">
+                  <div className="text-lg font-bold mb-2" style={{color: '#121D40'}}>No hay juegos terminados</div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {games
+                    .filter(g => g.status === 'FINISHED')
+                    .sort((a, b) => new Date(b.finished_at || b.created_at).getTime() - new Date(a.finished_at || a.created_at).getTime())
+                    .slice(0, 3)
+                    .map((game: any) => (
+                    <div key={game.id} className="p-4 rounded-lg shadow-md relative group hover:z-10" style={{background: 'white', border: '2px solid #D9A13B'}}>
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="text-lg font-bold truncate pr-2" style={{color: '#121D40'}}>{game.name}</h3>
+                        <Badge variant="outline" className="rounded-full px-2 py-0.5 text-xs font-bold shrink-0 border-gray-400 text-gray-600">
+                          TERMINADO
+                        </Badge>
+                      </div>
+                      
+                      <div className="text-sm text-gray-600 mb-4">
+                         Terminado: {new Date(game.finished_at || game.created_at).toLocaleString('es-CO', {hour12: true})}
+                      </div>
+
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
+                        <Button
+                          onClick={() => handleDeleteGame(game.id)}
+                          size="sm"
+                          variant="destructive"
+                          className="w-full font-bold bg-red-600 hover:bg-red-700"
+                        >
+                          🗑️ Borrar Historial
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <div className="grid md:grid-cols-1 gap-8 mb-12">
             {/* Gestión de Usuarios */}
             <Card className="backdrop-blur-sm shadow-2xl animate-fade-in" style={{backgroundColor: 'rgba(242, 227, 148, 0.9)', border: '4px solid #143C8C'}}>
