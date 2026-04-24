@@ -65,7 +65,27 @@ export default function LiveGamePage() {
   const [winners, setWinners] = useState<Winner[]>([])
   const [isUserWinner, setIsUserWinner] = useState(false)
   const [userPrizes, setUserPrizes] = useState<Array<{ type: string; amount: number }>>([])
-  const notifiedWinnersRef = useRef<Set<string>>(new Set())
+  
+  // Use session storage to persist notified winners across remounts
+  const getNotifiedWinners = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem('bingo_notified_winners')
+        if (stored) return new Set<string>(JSON.parse(stored))
+      } catch (e) {}
+    }
+    return new Set<string>()
+  }
+  
+  const saveNotifiedWinners = (winners: Set<string>) => {
+    if (typeof window !== 'undefined') {
+      try {
+        sessionStorage.setItem('bingo_notified_winners', JSON.stringify(Array.from(winners)))
+      } catch (e) {}
+    }
+  }
+
+  const notifiedWinnersRef = useRef<Set<string>>(getNotifiedWinners())
   const userWinnerRef = useRef<Set<string>>(new Set())
   const [adminContact, setAdminContact] = useState<string>('')
   const [isAdminView, setIsAdminView] = useState(false)
@@ -146,7 +166,7 @@ export default function LiveGamePage() {
         setGame(gameData)
         setIsUserWinner(false)
         setUserPrizes([])
-        notifiedWinnersRef.current = new Set()
+        // We do NOT clear session storage completely to avoid re-notifying past winners if we refresh mid-game
         userWinnerRef.current = new Set()
         if (isAdmin) {
           await loadAllPlayersCards(gameData.id, false)
@@ -298,6 +318,7 @@ export default function LiveGamePage() {
               newWinnerKeys.push(winnerKey)
             })
             newWinnerKeys.forEach(key => notifiedWinnersRef.current.add(key))
+            saveNotifiedWinners(notifiedWinnersRef.current)
           }
         }
 

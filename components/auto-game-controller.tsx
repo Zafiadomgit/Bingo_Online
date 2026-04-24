@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -21,6 +21,7 @@ export function AutoGameController({ gameId, onGameUpdate }: AutoGameControllerP
   const [gameFinished, setGameFinished] = useState(false)
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
   const [callDelay, setCallDelay] = useState(5000) // 5 segundos por defecto
+  const isCallingRef = useRef(false) // Prevents concurrent calls
 
   // Limpiar cualquier estado previo al montar el componente
   useEffect(() => {
@@ -107,6 +108,11 @@ export function AutoGameController({ gameId, onGameUpdate }: AutoGameControllerP
   }
 
   const callNextNumber = async () => {
+    if (isCallingRef.current) {
+      console.log('🔧 AutoGameController: Llamado en curso, omitiendo ejecución superpuesta')
+      return
+    }
+    isCallingRef.current = true
     try {
       const response = await fetch('/api/games/auto-call', {
         method: 'POST',
@@ -147,6 +153,8 @@ export function AutoGameController({ gameId, onGameUpdate }: AutoGameControllerP
       }
     } catch (error) {
       console.error('Error calling number:', error)
+    } finally {
+      isCallingRef.current = false
     }
   }
 

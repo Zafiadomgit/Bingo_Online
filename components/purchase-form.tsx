@@ -192,7 +192,9 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
       })
 
       // Agregar imagen (obligatoria)
-      formDataToSend.append('transferImage', transferImage)
+      if (transferImage) {
+        formDataToSend.append('transferImage', transferImage)
+      }
       
       // Agregar números de cartón seleccionados
       formDataToSend.append('cardNumbers', JSON.stringify(selectedCardNumbers))
