@@ -100,7 +100,8 @@ export function GameScheduler({ gameId, onSchedule, onCancel }: GameSchedulerPro
         body: JSON.stringify({
           ...(gameId && { gameId }),
           ...scheduleData,
-          scheduled_at: utcDate // Enviar fecha en UTC
+          scheduled_at: utcDate, // Enviar fecha en UTC
+          display_date: scheduleData.scheduled_at.split('T')[0].split('-').reverse().join('/')	// dd/mm/yyyy en hora local del usuario
         }),
       })
 
