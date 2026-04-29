@@ -18,7 +18,7 @@ async function supabaseFetch(path: string, options: any = {}) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { gameId, scheduled_at, auto_start, start_delay_minutes, max_cards, card_price,
+    const { gameId, scheduled_at, display_date, auto_start, start_delay_minutes, max_cards, card_price,
       prize_line, prize_two_lines, prize_full_card, use_percentage_prizes,
       prize_line_percentage, prize_two_lines_percentage, prize_full_card_percentage, currency } = body
 
@@ -29,7 +29,12 @@ export async function POST(request: NextRequest) {
     if (timeDiffMinutes < -5) return NextResponse.json({ success: false, error: `Fecha debe ser futura. Diff: ${timeDiffMinutes.toFixed(1)} min` }, { status: 400 })
 
     const finalId = gameId || uuidv4()
-    const name = `Sorteo Programado - ${scheduledDate.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })}`
+    // Usar fecha local del usuario (enviada desde el browser) para evitar bug de timezone
+    const dateForName = display_date || (() => {
+      const parts = scheduled_at.split('T')[0].split('-') // ['YYYY','MM','DD']
+      return `${parts[2]}/${parts[1]}/${parts[0]}`
+    })()
+    const name = `Sorteo Programado - ${dateForName}`
 
     const gameData = {
       name, max_cards: max_cards || 100, card_price: parseFloat(card_price) || 1.0,
