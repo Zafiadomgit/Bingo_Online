@@ -104,10 +104,10 @@ export function CardNumberSelector({ onSelect, selectedNumbers = [], userEmail, 
     return matchesSearch && matchesFilter
   })
 
-  // Filtrar solo números de este juego
-  const gameCardNumbers = cardNumbers.filter(card => card.game_id === gameId)
+  // La API ya filtra por gameId, usar cardNumbers directamente
+  const gameCardNumbers = cardNumbers
   const availableNumbers = Array.from({ length: maxCards }, (_, i) => i + 1).filter(num => 
-    !gameCardNumbers.find(card => card.number === num && (card.status === 'reserved' || card.status === 'used'))
+    !gameCardNumbers.find(card => card.number === num && (card.status === 'reserved' || card.status === 'used' || card.status === 'confirmed'))
   )
   const reservedNumbers = gameCardNumbers.filter(card => card.status === 'reserved')
   const usedNumbers = gameCardNumbers.filter(card => card.status === 'used')
@@ -198,14 +198,14 @@ export function CardNumberSelector({ onSelect, selectedNumbers = [], userEmail, 
           {Array.from({ length: maxCards }, (_, i) => i + 1).map((number) => {
             // Buscar si este número está reservado/usado para ESTE juego específico
             const cardData = cardNumbers.find(card => 
-              card.number === number && card.game_id === gameId
+              card.number === number
             )
             const status = cardData?.status || 'available'
             const isSelected = localSelectedNumbers.includes(number)
             
             // Solo considerar reservado si está reservado para ESTE juego específico
             const isReservedForThisGame = cardData && (cardData.status === 'reserved' || cardData.status === 'used')
-            const isReservedByUser = cardData?.user_email === userEmail && cardData.game_id === gameId
+            const isReservedByUser = cardData?.user_email === userEmail
             const isReservedByOther = isReservedForThisGame && cardData.user_email !== userEmail
             const isAvailable = !isReservedForThisGame
             
