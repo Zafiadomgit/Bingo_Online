@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
           user_email: email,
           game_id: gameId,
           status: 'reserved'
-        }])
+        }]) })
       } catch (error: any) {
         console.error(`Error reservando ${cardNumber}:`, error)
         reservationErrors.push(`Error en número ${cardNumber}`)
