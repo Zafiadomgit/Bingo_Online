@@ -59,7 +59,7 @@ export function CardNumberSelector({ onSelect, selectedNumbers = [], userEmail, 
   const loadCardNumbers = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/card-numbers')
+      const response = await fetch(`/api/card-numbers${gameId ? `?gameId=${gameId}` : ''}`)
       const data = await response.json()
       
       if (data.success) {
