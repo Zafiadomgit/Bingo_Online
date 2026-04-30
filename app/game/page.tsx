@@ -239,7 +239,7 @@ export default function GamePage() {
                         </div>
                         <div>
                           <span className="text-xs font-semibold text-gray-500 uppercase tracking-tight">Disponibles</span>
-                          <div className="text-xl font-bold text-blue-600">{game.max_cards}</div>
+                          <div className="text-xl font-bold text-blue-600">{Math.max(0, (game.max_cards || 0) - parseInt(game.total_cards_sold || '0'))}</div>
                         </div>
                       </div>
 
