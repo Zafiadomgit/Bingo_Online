@@ -1,43 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin as supabase } from '@/lib/supabase'
+import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-export async function DELETE(request: NextRequest) {
+async function supabaseFetch(path: string, options: any = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(options.headers || {}) },
+    cache: 'no-store'
+  })
+  if (!res.ok) { const err = await res.text(); throw new Error(`Supabase: ${err}`) }
+  const text = await res.text(); return text ? JSON.parse(text) : null
+}
+
+export async function DELETE() {
   try {
-    if (!supabase) {
-      return NextResponse.json({ success: false, error: 'Admin client not available' }, { status: 500 })
-    }
-
-    console.log('🗑️ Eliminando todos los juegos...')
-
-    // Eliminar todos los juegos de la tabla bingo_games
-    const { data, error } = await supabase
-      .from('bingo_games')
-      .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000') // Mantener al menos un registro para evitar problemas
-
-    if (error) {
-      console.error('Error deleting games:', error)
-      return NextResponse.json(
-        { success: false, error: 'Error eliminando los juegos' },
-        { status: 500 }
-      )
-    }
-
-    console.log('✅ Todos los juegos eliminados exitosamente')
-
-    return NextResponse.json({
-      success: true,
-      message: 'Todos los juegos han sido eliminados exitosamente',
-      deletedCount: data ? (data as unknown as any[]).length : 0
-    })
-
-  } catch (error) {
-    console.error('Error deleting all games:', error)
-    return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    // Eliminar solo juegos FINISHED (los cascade eliminan dependencias)
+    await supabaseFetch('bingo_games?status=eq.FINISHED', { method: 'DELETE' })
+    return NextResponse.json({ success: true, message: 'Juegos terminados eliminados' })
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

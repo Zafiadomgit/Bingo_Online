@@ -1,62 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
+async function supabaseFetch(path: string, options: any = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(options.headers || {}) },
+    cache: 'no-store'
+  })
+  if (!res.ok) { const err = await res.text(); throw new Error(`Supabase: ${err}`) }
+  const text = await res.text(); return text ? JSON.parse(text) : null
+}
+
 export async function GET(request: NextRequest) {
   try {
-    console.log('🔍 Obteniendo juegos programados...')
-    
-    // Obtener todos los juegos programados usando supabaseAdmin para bypass RLS
-    const clientToUse = supabaseAdmin || supabase
-    const { data: games, error: gamesError } = await clientToUse
-      .from('bingo_games')
-      .select('*')
-      .not('scheduled_at', 'is', null)
-      .order('scheduled_at', { ascending: true })
-
-    if (gamesError) {
-      console.error('❌ Error getting scheduled games:', gamesError)
-      return NextResponse.json(
-        { success: false, error: 'Error obteniendo sorteos programados' },
-        { status: 500 }
-      )
-    }
-
-    console.log(`📊 ${games?.length || 0} juegos encontrados en la base de datos`)
-
-    // Calcular tiempo restante para cada juego
-    const now = new Date()
-    const scheduledGames = games?.map(game => {
-      const scheduledDate = new Date(game.scheduled_at)
-      const timeRemaining = scheduledDate.getTime() - now.getTime()
-      
-      console.log(`🎮 Juego ${game.id}: ${game.name}`)
-      console.log(`   - Status: ${game.status}`)
-      console.log(`   - Scheduled: ${game.scheduled_at}`)
-      console.log(`   - Time remaining: ${(timeRemaining / (1000 * 60)).toFixed(2)} min`)
-      console.log(`   - Is overdue: ${timeRemaining < 0}`)
-      
-      return {
-        ...game,
-        timeRemaining: timeRemaining > 0 ? timeRemaining : 0,
-        isOverdue: timeRemaining < 0
-      }
-    }) || []
-
-    console.log(`✅ Devolviendo ${scheduledGames.length} juegos programados`)
-
-    return NextResponse.json({
-      success: true,
-      games: scheduledGames,
-      total: scheduledGames.length
-    })
-
-  } catch (error) {
-    console.error('Error getting scheduled games:', error)
-    return NextResponse.json(
-      { success: false, error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    const games = await supabaseFetch(
+      'bingo_games?status=in.(WAITING,ACTIVE,waiting,active,ACTIVE_WAITING)&finished_at=is.null&order=scheduled_at.asc'
+    ) || []
+    return NextResponse.json({ success: true, games })
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

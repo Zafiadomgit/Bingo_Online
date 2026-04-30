@@ -1,73 +1,42 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin as supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
+async function supabaseFetch(path: string, options: any = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(options.headers || {}) },
+    cache: 'no-store'
+  })
+  if (!res.ok) { const err = await res.text(); throw new Error(`Supabase: ${err}`) }
+  const text = await res.text(); return text ? JSON.parse(text) : null
+}
+
 export async function GET() {
   try {
-    if (!supabase) {
-      return NextResponse.json({ success: false, error: 'Base de datos no configurada' }, { status: 500 })
+    const games = await supabaseFetch('bingo_games?status=in.(WAITING,ACTIVE,FINISHED,waiting,active,finished)&order=created_at.desc&limit=1') || []
+    const game = games[0]
+    if (!game) return NextResponse.json({ success: true, totalRevenue: 0, totalPrizes: 0, profit: 0, currency: 'USD' })
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    const countRes = await fetch(`${supabaseUrl}/rest/v1/bingo_cards?game_id=eq.${game.id}`, {
+      method: 'HEAD', headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Prefer': 'count=exact' }, cache: 'no-store'
+    })
+    const cardsSold = parseInt(countRes.headers.get('content-range')?.split('/')[1] || '0')
+    const totalRevenue = cardsSold * parseFloat(String(game.card_price || 0))
+
+    let totalPrizes = 0
+    if (game.use_percentage_prizes) {
+      totalPrizes = totalRevenue * ((parseFloat(String(game.prize_line_percentage || 0)) + parseFloat(String(game.prize_two_lines_percentage || 0)) + parseFloat(String(game.prize_full_card_percentage || 0))) / 100)
+    } else {
+      totalPrizes = parseFloat(String(game.prize_line || 0)) + parseFloat(String(game.prize_two_lines || 0)) + parseFloat(String(game.prize_full_card || 0))
     }
 
-    // 1. Obtener todos los juegos
-    const { data: games } = await supabase.from('bingo_games').select('*')
-    const gamesList = games || []
-
-    // 2. Obtener solicitudes de compra aprobadas
-    const { data: purchaseRequests } = await supabase.from('purchase_requests').select('*').eq('status', 'approved')
-    const requestsList = purchaseRequests || []
-
-    // 3. Obtener conteo de usuarios
-    const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true })
-    const registeredUsers = usersCount || 0
-
-    // 4. Calcular estadísticas
-    const activeGames = gamesList.filter(game => game.status === 'WAITING' || game.status === 'ACTIVE' || game.status === 'waiting' || game.status === 'active')
-    const finishedGames = gamesList.filter(game => game.status === 'FINISHED' || game.status === 'finished')
-
-    // En el nuevo sistema, cada registro es un cartón
-    const totalCardsSold = requestsList.length
-    const totalRevenue = requestsList.reduce((sum, request) => sum + (parseFloat(request.amount) || 0), 0)
-
-    // Calcular premios pagados
-    let totalPrizesPaid = 0
-    finishedGames.forEach((game: any) => {
-      const lineWinners = game.line_winners || []
-      const twoLinesWinners = game.two_lines_winners || []
-      const fullCardWinners = game.full_card_winners || []
-
-      totalPrizesPaid += (lineWinners.length * (parseFloat(game.prize_line) || 0))
-      totalPrizesPaid += (twoLinesWinners.length * (parseFloat(game.prize_two_lines) || 0))
-      totalPrizesPaid += (fullCardWinners.length * (parseFloat(game.prize_full_card) || 0))
-    })
-
-    const netEarnings = totalRevenue - totalPrizesPaid
-
-    const earnings = {
-      totalCardsSold,
-      totalRevenue,
-      totalPrizesPaid,
-      netEarnings,
-      activeGames: activeGames.length,
-      finishedGames: finishedGames.length,
-      registeredUsers,
-      gamesWithPrizes: finishedGames.filter((game: any) =>
-        (game.line_winners && game.line_winners.length > 0) ||
-        (game.two_lines_winners && game.two_lines_winners.length > 0) ||
-        (game.full_card_winners && game.full_card_winners.length > 0)
-      ).length
-    }
-
-    return NextResponse.json({
-      success: true,
-      earnings
-    })
-
+    return NextResponse.json({ success: true, totalRevenue, totalPrizes, profit: totalRevenue - totalPrizes, currency: game.currency || 'USD', gameId: game.id, gameName: game.name })
   } catch (error: any) {
-    console.error('Error calculating earnings:', error)
-    return NextResponse.json(
-      { success: false, error: 'Error interno del servidor', details: error.message },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

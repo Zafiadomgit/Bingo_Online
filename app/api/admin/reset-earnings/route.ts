@@ -1,46 +1,39 @@
-import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase'
+import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST(request: Request) {
-    try {
-        if (!supabase) {
-            return NextResponse.json({ success: false, error: 'Base de datos no configurada' }, { status: 500 })
-        }
+async function supabaseFetch(path: string, options: any = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(options.headers || {}) },
+    cache: 'no-store'
+  })
+  if (!res.ok) { const err = await res.text(); throw new Error(`Supabase: ${err}`) }
+  const text = await res.text(); return text ? JSON.parse(text) : null
+}
 
-        console.log('💰 Iniciando reinicio de ganancias (REST)...');
+export async function POST() {
+  try {
+    // Obtener juego activo más reciente
+    const games = await supabaseFetch('bingo_games?status=in.(WAITING,ACTIVE)&finished_at=is.null&order=created_at.desc&limit=1')
+    const game = games?.[0]
+    if (!game) return NextResponse.json({ success: false, error: 'No hay juego activo' }, { status: 404 })
 
-        const deleteAll = async (table: string, primaryKey = 'id') => {
-           const { data, error } = await supabase.from(table).delete().not(primaryKey, 'is', null).select(primaryKey)
-           if (error) console.error(`Error deleting from ${table}:`, error)
-           return data?.length || 0
-        }
+    // Resetear ganadores y números llamados
+    await supabaseFetch(`bingo_games?id=eq.${game.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ called_numbers: [], current_number: null, line_winners: [], two_lines_winners: [], full_card_winners: [] })
+    })
+    // Resetear cartones
+    await supabaseFetch(`bingo_cards?game_id=eq.${game.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_winner: false })
+    })
 
-        // 1. Limpiar
-        await deleteAll('card_numbers', 'number');
-
-        // 2. Eliminar purchase_requests 
-        const prCount = await deleteAll('purchase_requests')
-
-        // 3. Eliminar cartones
-        const cardsCount = await deleteAll('bingo_cards')
-
-        // 4. Eliminar todos los juegos para un "Hard Reset" de dinero
-        const gamesCount = await deleteAll('bingo_games')
-
-        console.log(`✅ Ganancias reiniciadas: ${prCount} compras, ${cardsCount} cartones, ${gamesCount} juegos eliminados.`);
-
-        return NextResponse.json({
-            success: true,
-            message: 'Ganancias y datos financieros reiniciados exitosamente'
-        });
-
-    } catch (error: any) {
-        console.error('Error resetting earnings:', error);
-        return NextResponse.json({
-            success: false,
-            error: error.message || 'Error interno del servidor',
-        }, { status: 500 });
-    }
+    return NextResponse.json({ success: true, message: 'Ganancias reiniciadas exitosamente' })
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+  }
 }

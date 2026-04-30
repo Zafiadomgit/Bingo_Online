@@ -1,84 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin as supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
+async function supabaseFetch(path: string, options: any = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(options.headers || {}) },
+    cache: 'no-store'
+  })
+  if (!res.ok) { const err = await res.text(); throw new Error(`Supabase: ${err}`) }
+  const text = await res.text(); return text ? JSON.parse(text) : null
+}
+
 export async function GET(request: NextRequest) {
   try {
-    if (!supabase) {
-      return NextResponse.json({ success: false, error: 'Base de datos no configurada' }, { status: 500 })
-    }
-
-    console.log('🔍 Admin all-cards endpoint llamado')
     const { searchParams } = new URL(request.url)
     const gameId = searchParams.get('gameId')
+    if (!gameId) return NextResponse.json({ success: false, error: 'gameId requerido' }, { status: 400 })
 
-    if (!gameId) {
-      return NextResponse.json({ success: false, error: 'gameId es requerido' }, { status: 400 })
+    const cards = await supabaseFetch(`bingo_cards?game_id=eq.${gameId}&order=card_number.asc`) || []
+    const userIds = [...new Set(cards.map((c: any) => c.user_id))]
+
+    const userMap: Record<string, any> = {}
+    for (const uid of userIds) {
+      const users = await supabaseFetch(`users?id=eq.${uid}&select=id,email,display_name&limit=1`)
+      if (users?.[0]) userMap[uid] = users[0]
     }
 
-    // 1. Obtener cartones del juego con join de usuarios
-    const { data: rawCards, error } = await supabase
-      .from('bingo_cards')
-      .select(`
-        id,
-        card_number,
-        numbers,
-        marked_positions,
-        is_winner,
-        created_at,
-        user_id,
-        users (id, email, display_name)
-      `)
-      .eq('game_id', gameId)
-      .order('card_number', { ascending: true })
+    const cardsWithUsers = cards.map((card: any) => ({
+      ...card,
+      user: userMap[card.user_id] || { id: card.user_id, email: 'Desconocido', display_name: 'Desconocido' }
+    }))
 
-    if (error) throw error
-
-    const cards = rawCards || []
-    console.log(`✅ Encontrados ${cards.length} cartones for game ${gameId}`)
-
-    // Formatear y agrupar
-    const cardsWithUsers = cards.map(c => {
-      const u = Array.isArray(c.users) ? c.users[0] : c.users;
-      return {
-        id: c.id,
-        card_number: c.card_number,
-        numbers: c.numbers,
-        marked_positions: c.marked_positions,
-        is_winner: c.is_winner,
-        created_at: c.created_at,
-        user_id: c.user_id,
-        user: u || null
-      }
-    })
-
-    const cardsByUser = cardsWithUsers.reduce((acc: any, card: any) => {
-      const userId = card.user_id || 'unknown'
-      if (!acc[userId]) {
-         acc[userId] = { user: card.user, cards: [] }
-      }
-      acc[userId].cards.push(card)
-      return acc
-    }, {})
-
-    const response = NextResponse.json({
-      success: true,
-      cards: cardsWithUsers,
-      cardsByUser: Object.values(cardsByUser),
-      totalCards: cardsWithUsers.length,
-      totalPlayers: Object.keys(cardsByUser).length
-    })
-
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-    return response
-
+    return NextResponse.json({ success: true, cards: cardsWithUsers, totalCards: cards.length, totalPlayers: userIds.length })
   } catch (error: any) {
-    console.error('Error in all-cards API:', error)
-    return NextResponse.json({
-      success: false,
-      error: 'Error interno del servidor',
-      details: error.message || 'Error desconocido'
-    }, { status: 500 })
+    console.error('Error in all-cards:', error)
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

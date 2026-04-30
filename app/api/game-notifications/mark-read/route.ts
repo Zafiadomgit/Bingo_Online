@@ -1,48 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
+async function supabaseFetch(path: string, options: any = {}) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const res = await fetch(`${url}/rest/v1/${path}`, {
+    ...options,
+    headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...(options.headers || {}) },
+    cache: 'no-store'
+  })
+  if (!res.ok) { const err = await res.text(); throw new Error(`Supabase: ${err}`) }
+  const text = await res.text(); return text ? JSON.parse(text) : null
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { notificationId } = await request.json()
-
-    if (!notificationId) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'ID de notificación es requerido' 
-      }, { status: 400 })
-    }
-
-    // Marcar notificación como leída
-    const { data, error } = await supabase
-      .from('game_notifications')
-      .update({
-        is_read: true,
-        read_at: new Date().toISOString()
-      })
-      .eq('id', notificationId)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Error marking notification as read:', error)
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Error al marcar la notificación como leída' 
-      }, { status: 500 })
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      notification: data 
-    })
-
-  } catch (error) {
-    console.error('Error in mark-read API:', error)
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Error interno del servidor' 
-    }, { status: 500 })
+    const { notificationId, userId } = await request.json()
+    if (!notificationId) return NextResponse.json({ success: false, error: 'notificationId requerido' }, { status: 400 })
+    await supabaseFetch(`game_notifications?id=eq.${notificationId}`, { method: 'PATCH', body: JSON.stringify({ is_read: true }) })
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }
