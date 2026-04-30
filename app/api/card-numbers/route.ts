@@ -20,13 +20,46 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const gameId = searchParams.get('gameId')
 
-    // Si viene gameId filtrar por juego, si no traer todos
-    const path = gameId
+    // 1. Obtener reservas de card_numbers
+    const cardNumbersPath = gameId
       ? `card_numbers?game_id=eq.${gameId}&order=number.asc`
       : `card_numbers?order=number.asc`
+    const cardNumbers = await supabaseFetch(cardNumbersPath) || []
 
-    const data = await supabaseFetch(path) || []
-    return NextResponse.json({ success: true, cardNumbers: data })
+    // 2. Obtener cartones ya aprobados de bingo_cards (estos también están ocupados)
+    let approvedCards: any[] = []
+    if (gameId) {
+      const bingoCards = await supabaseFetch(
+        `bingo_cards?game_id=eq.${gameId}&select=card_number,user_id,created_at&order=card_number.asc`
+      ) || []
+
+      // Obtener emails de los usuarios para los bingo_cards
+      const userIds = [...new Set(bingoCards.map((c: any) => c.user_id))]
+      const userEmailMap: Record<string, string> = {}
+      for (const uid of userIds) {
+        const users = await supabaseFetch(`users?id=eq.${uid}&select=id,email&limit=1`)
+        if (users?.[0]) userEmailMap[uid] = users[0].email
+      }
+
+      // Convertir bingo_cards al mismo formato que card_numbers
+      const cardNumbersSet = new Set(cardNumbers.map((cn: any) => cn.number))
+      approvedCards = bingoCards
+        .filter((bc: any) => !cardNumbersSet.has(bc.card_number)) // evitar duplicados
+        .map((bc: any) => ({
+          id: `bingo_card_${bc.card_number}`,
+          number: bc.card_number,
+          user_email: userEmailMap[bc.user_id] || '',
+          game_id: gameId,
+          status: 'confirmed', // cartón aprobado = confirmed
+          created_at: bc.created_at
+        }))
+    }
+
+    // 3. Combinar ambas listas
+    const allNumbers = [...cardNumbers, ...approvedCards]
+      .sort((a: any, b: any) => a.number - b.number)
+
+    return NextResponse.json({ success: true, cardNumbers: allNumbers })
   } catch (error: any) {
     console.error('Error fetching card numbers:', error)
     return NextResponse.json({ success: true, cardNumbers: [] })
@@ -36,22 +69,24 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { number, userEmail, gameId } = await request.json()
+    if (!number || !userEmail) return NextResponse.json({ success: false, error: 'Número y email requeridos' }, { status: 400 })
 
-    if (!number || !userEmail) {
-      return NextResponse.json({ success: false, error: 'Número y email requeridos' }, { status: 400 })
-    }
-
-    // Verificar si ya existe
-    const existing = await supabaseFetch(
+    // Verificar si ya existe en card_numbers
+    const existingReservation = await supabaseFetch(
       `card_numbers?number=eq.${number}&game_id=eq.${gameId}&limit=1`
     )
-
-    if (existing && existing.length > 0) {
-      const record = existing[0]
-      if (record.user_email === userEmail) {
-        return NextResponse.json({ success: true, message: 'Número ya reservado por ti', cardNumber: record })
-      }
+    if (existingReservation?.length > 0) {
+      const record = existingReservation[0]
+      if (record.user_email === userEmail) return NextResponse.json({ success: true, message: 'Número ya reservado por ti', cardNumber: record })
       return NextResponse.json({ success: false, error: `Este número ya está ${record.status}` }, { status: 409 })
+    }
+
+    // Verificar si ya existe en bingo_cards (aprobado)
+    const existingApproved = await supabaseFetch(
+      `bingo_cards?game_id=eq.${gameId}&card_number=eq.${number}&select=card_number&limit=1`
+    )
+    if (existingApproved?.length > 0) {
+      return NextResponse.json({ success: false, error: 'Este número ya está confirmado por otro usuario' }, { status: 409 })
     }
 
     // Reservar
@@ -59,7 +94,6 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       body: JSON.stringify({ number, user_email: userEmail, game_id: gameId, status: 'reserved' })
     })
-
     return NextResponse.json({ success: true, message: 'Número reservado exitosamente', cardNumber: inserted?.[0] })
   } catch (error: any) {
     console.error('❌ Error en card-numbers API:', error)
@@ -73,18 +107,12 @@ export async function DELETE(request: NextRequest) {
     const number = searchParams.get('number')
     const gameId = searchParams.get('gameId')
     const userEmail = searchParams.get('userEmail')
-
-    if (!number || !gameId) {
-      return NextResponse.json({ success: false, error: 'Número y gameId requeridos' }, { status: 400 })
-    }
-
+    if (!number || !gameId) return NextResponse.json({ success: false, error: 'Número y gameId requeridos' }, { status: 400 })
     let path = `card_numbers?number=eq.${number}&game_id=eq.${gameId}`
     if (userEmail) path += `&user_email=eq.${encodeURIComponent(userEmail)}`
-
     await supabaseFetch(path, { method: 'DELETE' })
     return NextResponse.json({ success: true, message: 'Reserva eliminada' })
   } catch (error: any) {
-    console.error('Error deleting card number:', error)
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }
