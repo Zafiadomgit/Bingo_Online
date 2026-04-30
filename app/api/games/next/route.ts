@@ -54,6 +54,23 @@ export async function GET(request: NextRequest) {
       rawGames.find((g: any) => g.status === 'WAITING' || g.status === 'waiting') ||
       rawGames[0]
 
+    // Agregar total_cards_sold a cada juego
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+
+    for (const g of rawGames) {
+      try {
+        const countRes = await fetch(`${supabaseUrl}/rest/v1/bingo_cards?game_id=eq.${g.id}`, {
+          method: 'HEAD',
+          headers: { 'apikey': key, 'Authorization': `Bearer ${key}`, 'Prefer': 'count=exact' },
+          cache: 'no-store'
+        })
+        g.total_cards_sold = parseInt(countRes.headers.get('content-range')?.split('/')[1] || '0')
+      } catch {
+        g.total_cards_sold = 0
+      }
+    }
+
     const canPurchase = nextGame.status === 'WAITING' || nextGame.status === 'waiting'
 
     const response = NextResponse.json({ success: true, nextGame, games: rawGames, canPurchase })
