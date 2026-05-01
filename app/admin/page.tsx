@@ -898,7 +898,7 @@ export default function AdminPage() {
                       <tr>
                         <th className="py-2 text-blue-900">Usuario</th>
                         <th className="py-2 text-blue-900">Email</th>
-                        <th className="py-2 text-blue-900 text-center">Créditos</th>
+                        <th className="py-2 text-blue-900 text-center">Teléfono</th>
                         <th className="py-2 text-blue-900 text-right">Acciones</th>
                       </tr>
                     </thead>
@@ -907,7 +907,7 @@ export default function AdminPage() {
                         <tr key={u.id} className="hover:bg-blue-50/50 transition-colors">
                           <td className="py-3 font-bold text-gray-800">{u.display_name}</td>
                           <td className="py-3 text-gray-600">{u.email}</td>
-                          <td className="py-3 text-center font-bold text-blue-700">{u.credits}</td>
+                          <td className="py-3 text-center font-bold text-blue-700">{(u as any).telefono || '—'}</td>
                           <td className="py-3 text-right">
                             <Button 
                               variant="destructive" 
