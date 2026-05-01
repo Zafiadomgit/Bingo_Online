@@ -691,8 +691,8 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-green-600">{user.credits}</div>
-                            <div className="text-sm text-gray-600">Créditos</div>
+                            <div className="text-lg font-bold text-blue-600">{(user as any).telefono || '—'}</div>
+                            <div className="text-sm text-gray-600">Teléfono</div>
                           </div>
                         </div>
                       </CardContent>
