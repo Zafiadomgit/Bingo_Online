@@ -170,16 +170,22 @@ export async function POST(request: NextRequest) {
     const updateData: any = { current_number: newNumber, called_numbers: updatedCalledNumbers }
 
     if (lineWinners.length > 0) {
-      const newLineWinners = lineWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: prizes.line, won_at: new Date().toISOString() }))
+      // Si hay múltiples ganadores simultáneos, dividir el premio entre ellos
+      const totalLineWinners = existingLineWinners.length + lineWinners.length
+      const linePrizePerWinner = prizes.line / totalLineWinners
+      const newLineWinners = lineWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: linePrizePerWinner, won_at: new Date().toISOString() }))
       updateData.line_winners = [...existingLineWinners, ...newLineWinners]
-      for (const w of lineWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'line', prizes.line, w.card_number, game.currency || 'USD')
-      newWinners.push(...lineWinners.map(w => ({ ...w, prize_type: 'line', prize_amount: prizes.line })))
+      for (const w of lineWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'line', linePrizePerWinner, w.card_number, game.currency || 'USD')
+      newWinners.push(...lineWinners.map(w => ({ ...w, prize_type: 'line', prize_amount: linePrizePerWinner })))
     }
     if (twoLinesWinners.length > 0) {
-      const newTwoLinesWinners = twoLinesWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: prizes.twoLines, won_at: new Date().toISOString() }))
+      // Si hay múltiples ganadores simultáneos, dividir el premio entre ellos
+      const totalTwoLinesWinners = existingTwoLinesWinners.length + twoLinesWinners.length
+      const twoLinesPrizePerWinner = prizes.twoLines / totalTwoLinesWinners
+      const newTwoLinesWinners = twoLinesWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: twoLinesPrizePerWinner, won_at: new Date().toISOString() }))
       updateData.two_lines_winners = [...existingTwoLinesWinners, ...newTwoLinesWinners]
-      for (const w of twoLinesWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'two_lines', prizes.twoLines, w.card_number, game.currency || 'USD')
-      newWinners.push(...twoLinesWinners.map(w => ({ ...w, prize_type: 'two_lines', prize_amount: prizes.twoLines })))
+      for (const w of twoLinesWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'two_lines', twoLinesPrizePerWinner, w.card_number, game.currency || 'USD')
+      newWinners.push(...twoLinesWinners.map(w => ({ ...w, prize_type: 'two_lines', prize_amount: twoLinesPrizePerWinner })))
     }
     if (fullCardWinners.length > 0 && !hasFullCardWinner) {
       const newFullCardWinners = fullCardWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: prizes.fullCard, won_at: new Date().toISOString() }))
