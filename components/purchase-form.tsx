@@ -77,9 +77,22 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
       setFormData(prev => ({
         ...prev,
         email: user.email,
-        nombres: user.display_name?.split(' ')[0] || "",
-        apellidos: user.display_name?.split(' ').slice(1).join(' ') || ""
+        nombres: (user as any).display_name?.split(' ')[0] || "",
+        apellidos: (user as any).display_name?.split(' ').slice(1).join(' ') || "",
+        telefono: (user as any).telefono || ""
       }))
+
+      // Si no tiene telefono en el objeto local, buscarlo en BD
+      if (!(user as any).telefono) {
+        fetch(`/api/user/profile?email=${encodeURIComponent(user.email)}`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.success && data.user?.telefono) {
+              setFormData(prev => ({ ...prev, telefono: data.user.telefono }))
+            }
+          })
+          .catch(() => {})
+      }
     }
   }, [user])
 
