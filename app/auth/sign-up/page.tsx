@@ -147,18 +147,33 @@ export default function SignUpPage() {
             </CardHeader>
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-lg font-bold" style={{color: '#121D40'}}>Nombre completo</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Tu nombre"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="rounded-xl border-2 border-gray-300 focus:border-yellow-500 text-lg py-3"
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nombre" className="text-lg font-bold" style={{color: '#121D40'}}>Nombre *</Label>
+                    <Input
+                      id="nombre"
+                      name="nombre"
+                      type="text"
+                      placeholder="Tu nombre"
+                      value={formData.nombre}
+                      onChange={handleChange}
+                      required
+                      className="rounded-xl border-2 border-gray-300 focus:border-yellow-500 text-lg py-3"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="apellido" className="text-lg font-bold" style={{color: '#121D40'}}>Apellido *</Label>
+                    <Input
+                      id="apellido"
+                      name="apellido"
+                      type="text"
+                      placeholder="Tu apellido"
+                      value={formData.apellido}
+                      onChange={handleChange}
+                      required
+                      className="rounded-xl border-2 border-gray-300 focus:border-yellow-500 text-lg py-3"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="telefono" className="text-lg font-bold" style={{color: '#121D40'}}>Número de Teléfono</Label>
