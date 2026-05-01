@@ -18,7 +18,7 @@ async function supabaseFetch(path: string, options: any = {}) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, display_name } = await request.json()
+    const { email, password, display_name, telefono } = await request.json()
     if (!email || !password) return NextResponse.json({ success: false, error: 'Email y contraseña son requeridos' }, { status: 400 })
     if (password.length < 6) return NextResponse.json({ success: false, error: 'La contraseña debe tener al menos 6 caracteres' }, { status: 400 })
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 12)
     const newUsers = await supabaseFetch('users', {
       method: 'POST',
-      body: JSON.stringify({ id: uuidv4(), email: cleanEmail, password: hashedPassword, display_name: display_name || cleanEmail, credits: 1000, role: 'user' })
+      body: JSON.stringify({ id: uuidv4(), email: cleanEmail, password: hashedPassword, display_name: display_name || cleanEmail, credits: 1000, role: 'user', telefono: telefono || null })
     })
 
     const newUser = newUsers?.[0]

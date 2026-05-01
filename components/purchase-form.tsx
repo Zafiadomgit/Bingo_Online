@@ -38,7 +38,6 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
     email: "",
     telefono: "",
     cantidadCartones: 1 as number | '',
-    numeroReferencia: ""
   })
   const [promoter, setPromoter] = useState("")
   const [promotersList, setPromotersList] = useState<{id: string, name: string}[]>([])
@@ -164,7 +163,6 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
     if (!formData.email.trim()) newErrors.email = true
     if (!formData.telefono.trim()) newErrors.telefono = true
     if (!quantity) newErrors.cantidadCartones = true
-    if (!formData.numeroReferencia.trim()) newErrors.numeroReferencia = true
     if (!transferImage) newErrors.transferImage = true
     if (quantity && selectedCardNumbers.length !== quantity) newErrors.selectedCardNumbers = true
 
@@ -386,17 +384,11 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="numeroReferencia" className={`text-sm font-semibold ${errors.numeroReferencia ? 'text-red-500' : ''}`}>Número de Referencia de Pago *</Label>
                 <Input
-                  id="numeroReferencia"
-                  name="numeroReferencia"
-                  value={formData.numeroReferencia}
                   onChange={handleInputChange}
                   required
-                  className={`rounded-lg border-2 ${errors.numeroReferencia ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   placeholder="Ej: REF123456789"
                 />
-                {errors.numeroReferencia ? (
                   <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>
                 ) : (
                   <p className="text-xs text-gray-500">

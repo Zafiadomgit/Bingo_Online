@@ -46,10 +46,9 @@ export async function POST(request: NextRequest) {
     const email = formData.get('email') as string
     const telefono = formData.get('telefono') as string
     const cantidadCartones = parseInt(formData.get('cantidadCartones') as string)
-    const numeroReferencia = formData.get('numeroReferencia') as string
     const promoter_name = formData.get('promoter') as string
 
-    if (!nombres || !apellidos || !email || !telefono || !numeroReferencia) {
+    if (!nombres || !apellidos || !email || !telefono) {
       return NextResponse.json({ success: false, error: 'Todos los campos son requeridos' }, { status: 400 })
     }
 
@@ -117,8 +116,7 @@ export async function POST(request: NextRequest) {
         receipt_url: imageData ? JSON.stringify(imageData) : null,
         promoter_name, nombres, apellidos, telefono,
         cantidad_cartones: cantidadCartones,
-        card_numbers: JSON.stringify(cardNumbers),
-        numero_referencia: numeroReferencia
+        card_numbers: JSON.stringify(cardNumbers)
       })
     })
 

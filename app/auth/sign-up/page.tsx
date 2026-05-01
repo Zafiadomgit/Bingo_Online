@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react"
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
+    telefono: "",
     name: "",
     email: "",
     password: "",
@@ -24,6 +25,14 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     // Validaciones del frontend
+    if (!formData.telefono.trim()) {
+      setError("El número de teléfono es requerido")
+      return
+    }
+    if (!formData.telefono.trim()) {
+      toast({ title: "Error", description: "El teléfono es requerido", variant: "destructive" })
+      return
+    }
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "❌ Contraseñas no coinciden",
@@ -56,7 +65,8 @@ export default function SignUpPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          display_name: formData.name
+          display_name: formData.name,
+          telefono: formData.telefono
         }),
       })
 
@@ -146,6 +156,17 @@ export default function SignUpPage() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="telefono" className="text-lg font-bold" style={{color: '#121D40'}}>Número de Teléfono</Label>
+                  <Input
+                    id="telefono"
+                    name="telefono"
+                    type="tel"
+                    placeholder="+58 412 0000000"
+                    value={formData.telefono}
+                    onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+                    required
+                    className="rounded-xl border-2 border-gray-300 focus:border-green-500 h-12 text-lg"
+                  />
                   <Label htmlFor="email" className="text-lg font-bold" style={{color: '#121D40'}}>Correo electrónico</Label>
                   <Input
                     id="email"
