@@ -29,10 +29,6 @@ export default function SignUpPage() {
       setError("El número de teléfono es requerido")
       return
     }
-    if (!formData.telefono.trim()) {
-      toast({ title: "Error", description: "El teléfono es requerido", variant: "destructive" })
-      return
-    }
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "❌ Contraseñas no coinciden",
