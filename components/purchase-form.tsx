@@ -396,19 +396,6 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Input
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Ej: REF123456789"
-                />
-                  <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>
-                ) : (
-                  <p className="text-xs text-gray-500">
-                    Ingresa el número de referencia que aparece en tu comprobante de transferencia
-                  </p>
-                )}
-              </div>
 
             </div>
 
