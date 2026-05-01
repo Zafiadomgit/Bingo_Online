@@ -12,7 +12,8 @@ import { ArrowLeft } from "lucide-react"
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
     telefono: "",
-    name: "",
+    nombre: "",
+    apellido: "",
     email: "",
     password: "",
     confirmPassword: ""
@@ -25,6 +26,14 @@ export default function SignUpPage() {
     setIsLoading(true)
 
     // Validaciones del frontend
+    if (!formData.nombre.trim()) {
+      setError("El nombre es requerido")
+      return
+    }
+    if (!formData.apellido.trim()) {
+      setError("El apellido es requerido")
+      return
+    }
     if (!formData.telefono.trim()) {
       setError("El número de teléfono es requerido")
       return
@@ -61,7 +70,7 @@ export default function SignUpPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          display_name: formData.name,
+          display_name: `${formData.nombre} ${formData.apellido}`.trim(),
           telefono: formData.telefono
         }),
       })
