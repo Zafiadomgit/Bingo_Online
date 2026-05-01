@@ -37,7 +37,6 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
     apellidos: "",
     email: "",
     telefono: "",
-    cedula: "",
     cantidadCartones: 1 as number | '',
     numeroReferencia: ""
   })
@@ -164,7 +163,6 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
     if (!formData.apellidos.trim()) newErrors.apellidos = true
     if (!formData.email.trim()) newErrors.email = true
     if (!formData.telefono.trim()) newErrors.telefono = true
-    if (!formData.cedula.trim()) newErrors.cedula = true
     if (!quantity) newErrors.cantidadCartones = true
     if (!formData.numeroReferencia.trim()) newErrors.numeroReferencia = true
     if (!transferImage) newErrors.transferImage = true
@@ -356,21 +354,7 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cedula" className={`text-sm font-semibold ${errors.cedula ? 'text-red-500' : ''}`}>Cédula *</Label>
-                  <Input
-                    id="cedula"
-                    name="cedula"
-                    value={formData.cedula}
-                    onChange={handleInputChange}
-                    required
-                    className={`rounded-lg border-2 ${errors.cedula ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="V-12345678"
-                  />
-                  {errors.cedula && <p className="text-xs text-red-500 font-medium">Este campo es requerido</p>}
-                </div>
-                
-                <div className="space-y-2">
+<div className="space-y-2">
                   <Label htmlFor="cantidadCartones" className={`text-sm font-semibold ${errors.cantidadCartones ? 'text-red-500' : ''}`}>Cantidad de Cartones *</Label>
                   <Input
                     id="cantidadCartones"
@@ -445,8 +429,7 @@ export function PurchaseForm({ onClose, onSuccess, gameId, maxCards = 100, cardP
                       <p className="font-bold text-lg text-gray-800">📱 04121980898</p>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-600">Cédula:</p>
-                      <p className="font-bold text-lg text-gray-800">🆔 25874520</p>
+                          <p className="font-bold text-lg text-gray-800">🆔 25874520</p>
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-600">Código:</p>

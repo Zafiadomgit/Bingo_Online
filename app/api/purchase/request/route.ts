@@ -45,12 +45,11 @@ export async function POST(request: NextRequest) {
     const apellidos = formData.get('apellidos') as string
     const email = formData.get('email') as string
     const telefono = formData.get('telefono') as string
-    const cedula = formData.get('cedula') as string
     const cantidadCartones = parseInt(formData.get('cantidadCartones') as string)
     const numeroReferencia = formData.get('numeroReferencia') as string
     const promoter_name = formData.get('promoter') as string
 
-    if (!nombres || !apellidos || !email || !telefono || !cedula || !numeroReferencia) {
+    if (!nombres || !apellidos || !email || !telefono || !numeroReferencia) {
       return NextResponse.json({ success: false, error: 'Todos los campos son requeridos' }, { status: 400 })
     }
 
@@ -116,7 +115,7 @@ export async function POST(request: NextRequest) {
         id: uuidv4(), email, game_id: gameId,
         card_number: cardNumbers[0], amount: total, status: 'pending',
         receipt_url: imageData ? JSON.stringify(imageData) : null,
-        promoter_name, nombres, apellidos, telefono, cedula,
+        promoter_name, nombres, apellidos, telefono,
         cantidad_cartones: cantidadCartones,
         card_numbers: JSON.stringify(cardNumbers),
         numero_referencia: numeroReferencia
