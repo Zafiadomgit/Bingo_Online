@@ -20,8 +20,7 @@ interface PurchaseRequest {
   nombres: string
   apellidos: string
   email: string
-  cedula: string
-  cantidad_cartones: number
+cantidad_cartones: number
   amount: number
   numero_referencia: string
   status: 'pending' | 'approved' | 'rejected'
@@ -150,7 +149,6 @@ export function PendingRequestsAlert({ onViewDetails, refreshTrigger }: PendingR
                     {request.nombres} {request.apellidos}
                   </div>
                   <div className="text-sm text-gray-600">
-                    Cédula: {request.cedula}
                   </div>
                   <div className="text-sm text-gray-600">
                     {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - ${request.amount}

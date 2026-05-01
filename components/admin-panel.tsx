@@ -47,8 +47,7 @@ interface PurchaseRequest {
   apellidos: string
   email: string
   telefono: string
-  cedula: string
-  cantidad_cartones: number
+cantidad_cartones: number
   total: number
   status: 'pending' | 'approved' | 'rejected'
   transfer_image: string
@@ -988,7 +987,6 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                     <Label className="text-sm font-medium text-gray-600">Cédula</Label>
                     <p className="text-lg font-semibold flex items-center gap-2">
                       <Hash className="w-4 h-4" />
-                      {selectedRequest.cedula}
                     </p>
                   </div>
                 </div>

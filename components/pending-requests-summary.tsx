@@ -28,8 +28,7 @@ interface PurchaseRequest {
   apellidos: string
   email: string
   telefono: string
-  cedula: string
-  cantidad_cartones: number
+cantidad_cartones: number
   amount: number
   numero_referencia: string
   status: 'pending' | 'approved' | 'rejected'
@@ -247,7 +246,6 @@ export function PendingRequestsSummary({ onRequestProcessed }: PendingRequestsSu
                         {request.nombres} {request.apellidos}
                       </h3>
                       <p className="text-xs sm:text-sm" style={{color: '#143C8C'}}>
-                        Cédula: {request.cedula}
                       </p>
                       <p className="text-xs sm:text-sm" style={{color: '#143C8C'}}>
                         {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - ${request.amount}
@@ -381,7 +379,6 @@ export function PendingRequestsSummary({ onRequestProcessed }: PendingRequestsSu
                     <p className="text-sm font-medium text-gray-600">Cédula</p>
                     <p className="text-lg font-semibold flex items-center gap-2">
                       <Hash className="w-4 h-4" />
-                      {selectedRequest.cedula}
                     </p>
                   </div>
                   <div>
