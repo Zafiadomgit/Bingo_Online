@@ -32,7 +32,7 @@ export function CardNumberSelector({ onSelect, selectedNumbers = [], userEmail, 
 
   useEffect(() => {
     loadCardNumbers()
-  }, [])
+  }, [gameId])
 
   useEffect(() => {
     setLocalSelectedNumbers(selectedNumbers)

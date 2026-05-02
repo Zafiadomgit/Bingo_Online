@@ -278,7 +278,7 @@ export default function GamePage() {
                         <div className="mt-2 flex items-start gap-1 bg-blue-50 border border-blue-200 rounded-lg p-2">
                           <span className="text-blue-500 text-xs mt-0.5">ℹ️</span>
                           <p className="text-xs text-blue-700">
-                            Si dos jugadores ganan el mismo premio simultáneamente, el monto se divide en partes iguales entre los ganadores.
+                            Cada premio tiene un solo ganador por sorteo (1 línea, 1 dos líneas, 1 cartón lleno).
                           </p>
                         </div>
                       </div>

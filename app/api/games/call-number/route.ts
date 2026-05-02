@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 export const dynamic = 'force-dynamic'
 
-const MAX_LINE_WINNERS = 2
-const MAX_TWO_LINES_WINNERS = 2
+const MAX_LINE_WINNERS = 1
+const MAX_TWO_LINES_WINNERS = 1
 
 async function supabaseFetch(path: string, options: any = {}) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://esrrtfjzxrosytuwfokn.supabase.co'
@@ -165,18 +165,14 @@ export async function POST(request: NextRequest) {
     const updateData: any = { current_number: newNumber, called_numbers: updatedCalledNumbers }
 
     if (lineWinners.length > 0) {
-      const totalLineWinners = existingLineWinners.length + lineWinners.length
-      const linePrizePerWinner = prizes.line / totalLineWinners
-      const newLineWinners = lineWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: linePrizePerWinner, won_at: new Date().toISOString() }))
+      const newLineWinners = lineWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: prizes.line, won_at: new Date().toISOString() }))
       updateData.line_winners = [...existingLineWinners, ...newLineWinners]
-      for (const w of lineWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'line', linePrizePerWinner, w.card_number, game.currency || 'USD')
+      for (const w of lineWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'line', prizes.line, w.card_number, game.currency || 'USD')
     }
     if (twoLinesWinners.length > 0) {
-      const totalTwoLinesWinners = existingTwoLinesWinners.length + twoLinesWinners.length
-      const twoLinesPrizePerWinner = prizes.twoLines / totalTwoLinesWinners
-      const newTwoLinesWinners = twoLinesWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: twoLinesPrizePerWinner, won_at: new Date().toISOString() }))
+      const newTwoLinesWinners = twoLinesWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: prizes.twoLines, won_at: new Date().toISOString() }))
       updateData.two_lines_winners = [...existingTwoLinesWinners, ...newTwoLinesWinners]
-      for (const w of twoLinesWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'two_lines', twoLinesPrizePerWinner, w.card_number, game.currency || 'USD')
+      for (const w of twoLinesWinners) await saveWinnerNotification(w.user_id, game.id, game.name, 'two_lines', prizes.twoLines, w.card_number, game.currency || 'USD')
     }
     if (fullCardWinners.length > 0 && !hasFullCardWinner) {
       const newFullCardWinners = fullCardWinners.map(w => ({ user_id: w.user_id, user_email: userInfoMap[w.user_id]?.email || '', user_name: userInfoMap[w.user_id]?.display_name || '', user_phone: userInfoMap[w.user_id]?.telefono || '', card_id: w.id, card_number: w.card_number, prize_amount: prizes.fullCard, won_at: new Date().toISOString() }))
