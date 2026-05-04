@@ -64,9 +64,22 @@ export async function POST(request: Request) {
     await supabaseFetch(`purchase_requests?id=eq.${requestId}`, {
       method: 'PATCH', body: JSON.stringify({ status: 'approved', updated_at: new Date().toISOString() })
     })
-    await supabaseFetch(`card_numbers?game_id=eq.${gameId}&user_email=ilike.${encodeURIComponent(user.email)}&number=in.(${cardNumbers.join(',')})`, {
-      method: 'PATCH', body: JSON.stringify({ status: 'confirmed' })
-    })
+    // Garantizar que cada cartón aprobado esté en card_numbers como 'confirmed'
+    for (const cardNumber of cardNumbers) {
+      const existing = await supabaseFetch(`card_numbers?game_id=eq.${gameId}&number=eq.${cardNumber}&limit=1`)
+      if (existing && existing.length > 0) {
+        // Actualizar el existente a confirmed
+        await supabaseFetch(`card_numbers?game_id=eq.${gameId}&number=eq.${cardNumber}`, {
+          method: 'PATCH', body: JSON.stringify({ status: 'confirmed', user_email: user.email })
+        })
+      } else {
+        // Insertar nuevo registro confirmed
+        await supabaseFetch('card_numbers', {
+          method: 'POST',
+          body: JSON.stringify({ number: cardNumber, user_email: user.email, game_id: gameId, status: 'confirmed' })
+        }).catch(() => {}) // ignorar si ya existe por race condition
+      }
+    }
 
     return NextResponse.json({ success: true, message: 'Solicitud aprobada exitosamente', cardsCreated: cardNumbers.length })
   } catch (error: any) {

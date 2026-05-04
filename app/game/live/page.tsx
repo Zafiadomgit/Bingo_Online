@@ -12,6 +12,13 @@ import { GameNotifications } from "@/components/game-notifications"
 import { GameWaitingScreen } from "@/components/game-waiting-screen"
 import { formatCurrencyWithSymbol } from "@/hooks/use-currency"
 
+// Helper para obtener la moneda del juego, nunca asumir USD
+const getGameCurrency = (game: any) => {
+  const c = game?.currency
+  if (!c || c === '' || c === 'undefined') return 'VES' // Bingo Fortuna opera en Bs por defecto
+  return c
+}
+
 interface GameState {
   id: string
   name: string
@@ -294,7 +301,7 @@ export default function LiveGamePage() {
             setUserPrizes((prev: Array<{ type: string; amount: number }>) => [...prev, { type: prizeTypeText || 'PREMIO', amount: userWinner.prize_amount }])
             toast({
               title: `🎉 ¡GANASTE ${prizeTypeText}!`,
-              description: `Tu cartón #${userWinner.card_number} ha ganado ${formatCurrencyWithSymbol(userWinner.prize_amount, (game?.currency || 'USD') as any)}`,
+              description: `Tu cartón #${userWinner.card_number} ha ganado ${formatCurrencyWithSymbol(userWinner.prize_amount, getGameCurrency(game) as any)}`,
               duration: 15000
             })
           }
@@ -312,7 +319,7 @@ export default function LiveGamePage() {
               const prizeTypeText = { 'line': '🥉 UNA LÍNEA', 'two_lines': '🥈 DOS LÍNEAS', 'full_card': '🥇 CARTÓN LLENO' }[w.prize_type]
               toast({
                 title: `${prizeTypeText} GANADO!`,
-                description: `Cartón #${w.card_number} - ${formatCurrencyWithSymbol(w.prize_amount, (game?.currency || 'USD') as any)}${isAdminView ? ` (${w.user_name || w.user_email})` : ''}`,
+                description: `Cartón #${w.card_number} - ${formatCurrencyWithSymbol(w.prize_amount, getGameCurrency(game) as any)}${isAdminView ? ` (${w.user_name || w.user_email})` : ''}`,
                 duration: 60000
               })
               newWinnerKeys.push(winnerKey)
@@ -506,7 +513,7 @@ export default function LiveGamePage() {
               <h2 className="text-5xl font-bold mb-4 text-white">🎉 ¡FELICIDADES, GANASTE! 🎉</h2>
               {userPrizes.map((prize: { type: string; amount: number }, i: number) => (
                 <p key={i} className="text-3xl font-bold text-white mb-2">
-                  {prize.type} — {formatCurrencyWithSymbol(prize.amount, (game?.currency || 'USD') as any)}
+                  {prize.type} — {formatCurrencyWithSymbol(prize.amount, getGameCurrency(game) as any)}
                 </p>
               ))}
               <div className="bg-white/90 rounded-lg p-6 mt-4">
@@ -588,7 +595,7 @@ export default function LiveGamePage() {
                           )}
                         </div>
                         <div className="text-lg font-bold text-green-600">
-                          {formatCurrencyWithSymbol(winner.prize_amount, (game?.currency || 'USD') as any)}
+                          {formatCurrencyWithSymbol(winner.prize_amount, getGameCurrency(game) as any)}
                         </div>
                       </div>
                     ))}
