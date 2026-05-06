@@ -161,7 +161,7 @@ export function AdminNotifications({ onRequestSelect }: AdminNotificationsProps)
                         <p className="text-sm" style={{color: '#143C8C'}}>
                         </p>
                         <p className="text-sm" style={{color: '#143C8C'}}>
-                          {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - ${request.total}
+                          {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - {(request as any).currency === 'VES' ? 'Bs.' : '$'}{request.total}
                         </p>
                       </div>
                     </div>
@@ -278,7 +278,7 @@ export function AdminNotifications({ onRequestSelect }: AdminNotificationsProps)
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Total a Pagar</p>
-                    <p className="text-2xl font-bold text-green-600">${selectedRequest.total}</p>
+                    <p className="text-2xl font-bold text-green-600">{(selectedRequest as any).currency === 'VES' ? 'Bs.' : '$'}{selectedRequest.total}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Estado</p>

@@ -414,7 +414,7 @@ export function PendingRequestsSummary({ onRequestProcessed }: PendingRequestsSu
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Total a Pagar</p>
-                    <p className="text-2xl font-bold text-green-600">${selectedRequest.amount}</p>
+                    <p className="text-2xl font-bold text-green-600">{(selectedRequest as any).currency === 'VES' ? 'Bs.' : '$'}{selectedRequest.amount}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Estado</p>
