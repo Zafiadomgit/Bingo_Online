@@ -248,7 +248,7 @@ export function PendingRequestsSummary({ onRequestProcessed }: PendingRequestsSu
                       <p className="text-xs sm:text-sm" style={{color: '#143C8C'}}>
                       </p>
                       <p className="text-xs sm:text-sm" style={{color: '#143C8C'}}>
-                        {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - ${request.amount}
+                        {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - {(request as any).currency === 'VES' ? 'Bs.' : '$'}{request.amount}
                       </p>
                       {request.promoter_name && (
                         <p className="text-[10px] font-semibold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full inline-block mt-0.5">

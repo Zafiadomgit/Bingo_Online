@@ -52,11 +52,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Todos los campos son requeridos' }, { status: 400 })
     }
 
-    // Obtener precio del cartón
+    // Obtener precio y moneda del juego
     let cardPrice = 1.00
+    let gameCurrency = 'VES'
     if (gameId) {
-      const games = await supabaseFetch(`bingo_games?id=eq.${gameId}&select=card_price&limit=1`)
-      if (games?.[0]) cardPrice = parseFloat(games[0].card_price || '1.00')
+      const games = await supabaseFetch(`bingo_games?id=eq.${gameId}&select=card_price,currency&limit=1`)
+      if (games?.[0]) {
+        cardPrice = parseFloat(games[0].card_price || '1.00')
+        gameCurrency = games[0].currency || 'VES'
+      }
     }
     const total = cantidadCartones * cardPrice
 
@@ -112,7 +116,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       body: JSON.stringify({
         id: uuidv4(), email, game_id: gameId,
-        card_number: cardNumbers[0], amount: total, status: 'pending',
+        card_number: cardNumbers[0], amount: total, status: 'pending', currency: gameCurrency,
         receipt_url: imageData ? JSON.stringify(imageData) : null,
         promoter_name, nombres, apellidos, telefono,
         cantidad_cartones: cantidadCartones,

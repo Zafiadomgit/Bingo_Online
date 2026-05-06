@@ -211,7 +211,9 @@ export function CardNumberSelector({ onSelect, selectedNumbers = [], userEmail, 
             const isAvailable = !isReservedForThisGame
             
             const selectionIndex = localSelectedNumbers.indexOf(number)
-            const canSelect = (isAvailable || isReservedByUser || isSelected) && !isReservedByOther
+            // confirmed = aprobado = NUNCA seleccionable aunque sea del mismo usuario
+            const isConfirmed = cardData?.status === 'confirmed'
+            const canSelect = (isAvailable || (isReservedByUser && !isConfirmed) || isSelected) && !isReservedByOther && !isConfirmed
 
             return (
               <Button
@@ -224,8 +226,10 @@ export function CardNumberSelector({ onSelect, selectedNumbers = [], userEmail, 
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-200'
                     : isSelected
                     ? 'bg-blue-500 text-white shadow-lg scale-110 ring-2 ring-blue-300'
+                    : isConfirmed
+                    ? 'bg-red-500 text-white border-2 border-red-600 cursor-not-allowed opacity-80'
                     : isReservedByOther
-                    ? 'bg-red-100 text-red-800 border-2 border-red-300 cursor-not-allowed'
+                    ? 'bg-red-400 text-white border-2 border-red-500 cursor-not-allowed'
                     : isAvailable
                     ? 'bg-green-100 text-green-800 hover:bg-green-200 border-2 border-green-300'
                     : isReservedByUser

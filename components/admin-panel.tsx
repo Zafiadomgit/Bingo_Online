@@ -71,6 +71,8 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
   const [selectedGameForReprogram, setSelectedGameForReprogram] = useState<any>(null)
   const { toast } = useToast()
 
+  const getCurrencySymbol = (currency?: string) => currency === 'VES' ? 'Bs.' : '$'
+
   const formatGameCurrency = (amount: number | string, currency?: string) => {
     const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
     if (isNaN(numAmount)) return '$0';
@@ -722,7 +724,7 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                               </h3>
                               <p className="text-gray-600">{request.email}</p>
                               <p className="text-sm text-gray-500">
-                                {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - ${request.total}
+                                {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - {getCurrencySymbol((request as any).currency)}{request.total}
                               </p>
                               <p className="text-xs text-gray-400">
                                 {new Date(request.created_at).toLocaleString('es-CO', { hour12: true })}
@@ -770,7 +772,7 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                               </h3>
                               <p className="text-gray-600">{request.email}</p>
                               <p className="text-sm text-gray-500">
-                                ${request.total} - {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''}
+                                {getCurrencySymbol((request as any).currency)}{request.total} - {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''}
                               </p>
                             </div>
                           </div>
@@ -1005,7 +1007,7 @@ export function AdminPanel({ onClose }: AdminPanelProps) {
                   </div>
                   <div>
                     <Label className="text-sm font-medium text-gray-600">Total a Pagar</Label>
-                    <p className="text-2xl font-bold text-green-600">${selectedRequest.total}</p>
+                    <p className="text-2xl font-bold text-green-600">{getCurrencySymbol((selectedRequest as any)?.currency)}{selectedRequest.total}</p>
                   </div>
                   <div>
                     <Label className="text-sm font-medium text-gray-600">Estado</Label>
