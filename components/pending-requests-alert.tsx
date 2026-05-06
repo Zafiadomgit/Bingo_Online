@@ -151,7 +151,7 @@ export function PendingRequestsAlert({ onViewDetails, refreshTrigger }: PendingR
                   <div className="text-sm text-gray-600">
                   </div>
                   <div className="text-sm text-gray-600">
-                    {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - ${request.amount}
+                    {request.cantidad_cartones} cartón{request.cantidad_cartones > 1 ? 'es' : ''} - {(request as any).currency === 'VES' ? 'Bs.' : '$'}{request.amount}
                   </div>
                 </div>
                 <div className="text-right">
